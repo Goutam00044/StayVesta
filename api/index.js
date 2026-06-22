@@ -98,6 +98,10 @@ app.post('/logout',(req,res)=>{
     res.cookie('token','').json(true);
 })
 
+app.post('/upload-link',(req,res)=>{
+        const {link} = req.body;
+});
+
 app.listen(4000,()=>{
     console.log("Server Started on port no 4000")
 });
