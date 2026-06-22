@@ -5,10 +5,12 @@ const mongoose= require('mongoose');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken');
+const path = require('path');
 const app = express();
 const cookieParser = require('cookie-parser');
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret='cglica2i3ascdvdy';
+const imagedownloader = require('image-downloader');
 
 app.use(cors({
     credentials: true,
@@ -98,10 +100,22 @@ app.post('/logout',(req,res)=>{
     res.cookie('token','').json(true);
 })
 
-app.post('/upload-link',(req,res)=>{
-        const {link} = req.body;
+app.post('/upload-link', async (req, res) => {
+    const { link } = req.body;
+    const newname = 'photo' + Date.now() + '.jpg';
+    const dest = path.join(__dirname, 'uploads', newname);
+
+    try {
+        await imagedownloader.image({
+            url: link,
+            dest,
+        });
+        res.json(newname);
+    } catch (e) {
+        res.status(400).json({ error: 'Image download failed', details: e.message });
+    }
 });
 
-app.listen(4000,()=>{
-    console.log("Server Started on port no 4000")
+app.listen(4000, () => {
+    console.log('Server Started on port no 4000');
 });
