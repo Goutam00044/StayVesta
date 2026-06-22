@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+input[type='text'],input[type='password'],input[type='email']{
+    @apply w-full border my-2 py-2 px-3 rounded-md;
+}
+
+button.primary{
+    @apply w-full p-2 bg-amber-600 text-white rounded-md;
+}
