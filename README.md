@@ -50,6 +50,11 @@ The platform allows hosts to list and manage their properties, while guests can 
 | **CI/CD** | GitHub Actions | Auto-deploy on push to main |
  
 ---
+## Project Status
+
+🚧 Currently under active development.
+
+---
  
 ## 🗂️ Project Structure
  
