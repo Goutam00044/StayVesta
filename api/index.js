@@ -6,11 +6,17 @@ const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const jwt= require('jsonwebtoken');
 const path = require('path');
-const app = express();
+const multer  = require('multer');
+const imagedownloader = require('image-downloader');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
+
+const app = express();
+
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret='cglica2i3ascdvdy';
-const imagedownloader = require('image-downloader');
+const src = path.join(__dirname, 'uploads')
+
 
 app.use(cors({
     credentials: true,
@@ -18,7 +24,8 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
-
+app.use('/uploads',express.static(src));
+console.log(src);
 app.get("/test",(req,res)=>{
     res.json('test okay')
 })
@@ -115,6 +122,25 @@ app.post('/upload-link', async (req, res) => {
         res.status(400).json({ error: 'Image download failed', details: e.message });
     }
 });
+
+const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
+app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
+    const uploadedfiles =[];
+    for (let i = 0; i < req.files.length; i++) {
+        const { path: filePath, originalname } = req.files[i];
+        // Extracting the 'file name' with '.extension'
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        // Set fileName with '.extension'
+        const newPath = filePath + '.' + ext;
+        console.log(newPath);
+        fs.renameSync(filePath, newPath);
+        // Always return only the base filename (no directories or 'uploads' prefix)
+        uploadedfiles.push(path.basename(newPath));
+    }
+    res.json(uploadedfiles);
+
+})
 
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
