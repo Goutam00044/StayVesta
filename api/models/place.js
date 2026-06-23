@@ -1,4 +1,4 @@
-const mongoose = require('monogoose');
+const mongoose = require('mongoose');
 
 const placeSchema = new mongoose.Schema(
     {

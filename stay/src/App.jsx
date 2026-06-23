@@ -12,8 +12,10 @@ import axios, { Axios } from 'axios';
 axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 import { UserContextProvider } from './UserContext.jsx';
-import AccountPage from './pages/AccountPage.jsx';
 import PlacesPage from './pages/PlacesPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import PlacesPageFrom from './pages/PlacesPageFrom.jsx';
+
 function App() {
   return (
     <UserContextProvider>
@@ -22,8 +24,10 @@ function App() {
             <Route path='/' element={<Homepage/>}/>
             <Route path='/login' element={<LoginPage/>}/>
             <Route path='/register' element={<RegisterPage/>}/>
-            <Route path='/account/:subpage?'  element={<AccountPage/>}/>
-            <Route path='/account/:subpage/:action' element={<PlacesPage/>}/>
+            <Route path='/account/' element={<ProfilePage/>}/>
+            <Route path='/account/:subpage' element={<ProfilePage/>}/>
+            <Route path='/account/places' element={<PlacesPage/>}/>
+            <Route path='/account/places/new' element={<PlacesPageFrom/>}/>
           </Route>
         </Routes>
     </UserContextProvider>

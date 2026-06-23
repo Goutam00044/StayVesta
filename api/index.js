@@ -10,6 +10,7 @@ const multer  = require('multer');
 const imagedownloader = require('image-downloader');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
+const Place = require('./models/place');
 
 const app = express();
 
@@ -140,6 +141,24 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
     }
     res.json(uploadedfiles);
 
+})
+
+// Saving this Places data from React to MonogoDb model 
+app.post('/places',(req,res)=>{
+    // We are store the places data but specific to user so using token
+    const {token}= req.cookies;
+    const {title,addedPhotos,description,perks,extraInfo,checkIn,checkOut,maxGuests} = req.body;
+    
+    jwt.verify(token,jwtSecret,{},async(err, userData)=>{
+        if(err){
+            console.error(err);
+        } 
+        await Place.create({
+            owner: userData.id,
+            title,addedPhotos,description,perks,extraInfo,checkIn,checkOut,maxGuests
+        })
+    })
+    res.json(true);
 })
 
 app.listen(4000, () => {

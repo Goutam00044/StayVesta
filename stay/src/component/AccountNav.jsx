@@ -1,32 +1,14 @@
-import { useContext, useState } from "react";
-import { UserContext } from "../UserContext";
-import { Link, Navigate, useParams } from "react-router-dom";
-import axios from "axios";
-import PlacesPage from "./PlacesPage";
-export default function AccountPage(){
-    const [redirect, setredirect] = useState(null);
-    const {ready,user,setUser} = useContext(UserContext); 
-    let {subpage} = useParams();
-    if (!subpage) {
-        subpage = 'profile';
-    }  
+import { Link, useLocation } from "react-router-dom";
 
-   async function logout(){
-        await axios.post('/logout');
-        setredirect(true);
-        setUser(null);
+export default function AccountNav(){
+    const {pathname} = useLocation();
+    console.log(pathname);
+    let subpage = pathname.split('/')?.[2];
+    if(subpage=== undefined)
+    {
+        subpage='profile';
     }
-    if(!ready){
-            return 'Loading..';
-    }
-    
-    if (ready && !user && !redirect){
-            return <Navigate to={'/login'}/>
-        }
-    if(redirect){
-        return <Navigate to={'/'}/>
-    }
-    function classes(type = null) {
+     function classes(type = subpage) {
             let cls = 'py-2 px-6 inline-flex gap-1 rounded-2xl';
             if (type === subpage) {
                 cls += ' bg-amber-600 text-white rounded-2xl';
@@ -36,12 +18,9 @@ export default function AccountPage(){
             }
             return cls;
         }
-
-
-
-        return(
-            <div>
-                <nav className="w-full flex justify-center mt-8 gap-2">
+    return(
+        <>
+            <nav className="w-full flex justify-center mt-8 gap-2">
                     <Link className={classes('profile')}to={'/account'}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -60,15 +39,6 @@ export default function AccountPage(){
                         My Accommodations
                     </Link>
                 </nav>
-                {subpage === 'profile' && (
-                    <div className="text-center max-w-lg mx-auto mt-10">
-                        Logged in as {user.name} ({user.email})
-                        <button className="primary max-w-sm mt-3" onClick={logout}> Logout </button>
-                    </div>
-                )}
-                {subpage==='places' && (
-                    <PlacesPage/>
-                )}
-            </div>
-        )
+        </>
+    )
 }
