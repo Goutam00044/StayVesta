@@ -161,6 +161,18 @@ app.post('/places',(req,res)=>{
     res.json(true);
 })
 
+app.get('/places',(req,res)=>{
+    const {token} = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+            console.error(err);
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        const places = await Place.find({ owner: userData.id });
+        res.json(places);
+    });
+});
+
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
 });
