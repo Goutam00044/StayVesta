@@ -147,7 +147,7 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
 app.post('/places',(req,res)=>{
     // We are store the places data but specific to user so using token
     const {token}= req.cookies;
-    const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests} = req.body;
+    const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests,price} = req.body;
     
     jwt.verify(token,jwtSecret,{},async(err, userData)=>{
         if(err){
@@ -163,13 +163,14 @@ app.post('/places',(req,res)=>{
             extraInfo,
             checkIn,
             checkOut,
-            maxGuests
+            maxGuests,
+            price,
         })
     })
     res.json(true);
 })
 
-app.get('/places',(req,res)=>{
+app.get('/user-places',(req,res)=>{
     const {token} = req.cookies;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
@@ -200,6 +201,7 @@ app.put('/places',(req,res)=>{
             checkIn,
             checkOut,
             maxGuests,
+            price,
         } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
@@ -218,6 +220,7 @@ app.put('/places',(req,res)=>{
                 checkIn,
                 checkOut,
                 maxGuests,
+                price
             })
         }
         placeDoc.save();
@@ -225,6 +228,9 @@ app.put('/places',(req,res)=>{
     });
 })
 
+app.get('/places',async(req,res)=>{
+    res.json(await Place.find());
+})
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
 });

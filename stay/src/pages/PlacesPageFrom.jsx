@@ -16,6 +16,7 @@ export default function PlacesPageFrom(){
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [maxGuests,setMaxGuests] = useState(1);
+    const [price, setprice] = useState(0)
     const [redirect, setredirect] = useState('');
 
     useEffect(() => {
@@ -27,13 +28,14 @@ export default function PlacesPageFrom(){
                 console.log('loaded place', place);
                 setTitle(place.title);
                 setAddress(place.address);
-            setAddedPhotos(place.photos || []);
+                setAddedPhotos(place.photos || []);
                 setDescription(place.description);
                 setPerks(place.perks || []);
                 setExtraInfo(place.extraInfo);
                 setCheckIn(place.checkIn);
                 setCheckOut(place.checkOut);
                 setMaxGuests(place.maxGuests);
+                setprice(place.price);
         })
     }, [id])
     
@@ -69,6 +71,7 @@ export default function PlacesPageFrom(){
                         checkIn,
                         checkOut,
                         maxGuests,
+                        price,
         } 
         if(id){
             await axios.put('/places',{id, ...placeData}
@@ -116,8 +119,8 @@ export default function PlacesPageFrom(){
                 <textarea value={extraInfo} onChange={(e)=>{
                     setExtraInfo(e.target.value);}} />
                 
-                {preInput('Check in&out times','add check in and out')}
-                <div className="grid gap-2 sm:grid-cols-3">
+                {preInput('Check in, out times & Price','add check in, out and price')}
+                <div className="grid gap-2 sm:grid-cols-4">
                     <div>
                         <h3 className="mt-2 -mb-1">Check in time</h3>
                         <input type="text" placeholder="14:00" value={checkIn} onChange={(e)=>{
@@ -134,6 +137,11 @@ export default function PlacesPageFrom(){
                         <h3 className="mt-2 -mb-1">Max number of guests</h3>
                         <input type="number" value={maxGuests} onChange={(e)=>{
                             setMaxGuests(e.target.value);}}/>
+                    </div>
+                    <div>
+                        <h3 className="mt-2 -mb-1">Price</h3>
+                        <input type="number" value={price} onChange={(e)=>{
+                            setprice(e.target.value);}}/>
                     </div>
                 </div>
                 <button className="bg-amber-600 px-3 w-full py-1 rounded-2xl">Save</button>
