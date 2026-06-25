@@ -28,6 +28,7 @@ function App() {
             <Route path='/account/:subpage' element={<ProfilePage/>}/>
             <Route path='/account/places' element={<PlacesPage/>}/>
             <Route path='/account/places/new' element={<PlacesPageFrom/>}/>
+            <Route path='/account/places/:id' element={<PlacesPageFrom/>}/>
           </Route>
         </Routes>
     </UserContextProvider>

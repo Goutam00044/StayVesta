@@ -147,7 +147,7 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
 app.post('/places',(req,res)=>{
     // We are store the places data but specific to user so using token
     const {token}= req.cookies;
-    const {title,addedPhotos,description,perks,extraInfo,checkIn,checkOut,maxGuests} = req.body;
+    const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests} = req.body;
     
     jwt.verify(token,jwtSecret,{},async(err, userData)=>{
         if(err){
@@ -155,7 +155,15 @@ app.post('/places',(req,res)=>{
         } 
         await Place.create({
             owner: userData.id,
-            title,addedPhotos,description,perks,extraInfo,checkIn,checkOut,maxGuests
+            title,
+            address,
+            photos,
+            description,
+            perks,
+            extraInfo,
+            checkIn,
+            checkOut,
+            maxGuests
         })
     })
     res.json(true);
@@ -172,6 +180,50 @@ app.get('/places',(req,res)=>{
         res.json(places);
     });
 });
+
+app.get('/places/:id',async(req,res)=>{
+    const {id}= req.params;
+    res.json(await Place.findById(id));
+
+})
+
+app.put('/places',(req,res)=>{
+    const {token} = req.cookies;
+    const {
+            id,
+            title,
+            address,
+            photos,
+            description,
+            perks,
+            extraInfo,
+            checkIn,
+            checkOut,
+            maxGuests,
+        } = req.body;
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+            console.error(err);
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        const placeDoc = await Place.findById(id);
+        if(userData.id=== (placeDoc.owner.toString())){
+            placeDoc.set({
+                title,
+                address,
+                photos,
+                description,
+                perks,
+                extraInfo,
+                checkIn,
+                checkOut,
+                maxGuests,
+            })
+        }
+        placeDoc.save();
+        res.json('ok');
+    });
+})
 
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
