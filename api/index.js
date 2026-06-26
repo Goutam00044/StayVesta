@@ -15,7 +15,7 @@ const Place = require('./models/place');
 const app = express();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret='cglica2i3ascdvdy';
+const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-me';
 const src = path.join(__dirname, 'uploads')
 
 
@@ -33,9 +33,13 @@ app.get("/test",(req,res)=>{
 
 // MongoDB Connection with error handling
 const mongoUri = process.env.MONGODB_URI;
-mongoose.connect(mongoUri)
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err.message));
+if (!mongoUri) {
+    console.error('MONGODB_URI is not set. Add it to your .env file before starting the server.');
+} else {
+    mongoose.connect(mongoUri)
+        .then(() => console.log('MongoDB connected successfully'))
+        .catch(err => console.error('MongoDB connection error:', err.message));
+}
 app.post('/register', async(req,res)=>{
     const {name,email,password}=req.body;
 
@@ -182,11 +186,18 @@ app.get('/user-places',(req,res)=>{
     });
 });
 
-app.get('/places/:id',async(req,res)=>{
-    const {id}= req.params;
-    res.json(await Place.findById(id));
-
-})
+app.get('/places/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const placeDoc = await Place.findById(id);
+        if (!placeDoc) {
+            return res.status(404).json({ error: 'Place not found' });
+        }
+        res.json(placeDoc);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 app.put('/places',(req,res)=>{
     const {token} = req.cookies;

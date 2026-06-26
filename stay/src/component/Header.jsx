@@ -9,14 +9,14 @@ export default function Header() {
         <header className="mb-4 flex items-center justify-between">
         {/* This is Logo for Our APP */}
         <div>
-          <a href="" className="logo font-bold">StayVersta</a>
+          <a href="/" className="logo font-bold">StayVersta</a>
         </div>
         {/* This is Login and Signup for Our APP */}
         <div className='flex items-center gap-4'>
           {!!user &&(
-            <div>
+            <Link to={'/account'}>
               {user.name}
-            </div>
+            </Link>
           )}
           <Link to="/login" className="font-bold">Log in</Link>
           <a href="" className="font-bold">Sign up</a>

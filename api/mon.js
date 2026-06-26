@@ -1,9 +1,12 @@
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-// Read MongoDB URI from environment for safety. Replace in .env with the connection string
-// you copied from MongoDB Atlas (or use your local URI).
-const url = process.env.MONGODB_URI || 'mongodb+srv://StayVesta:StayVesta09@stay-vesta.otlfdad.mongodb.net/?appName=Stay-Vesta';
+// Read the MongoDB URI from environment for safety.
+const url = process.env.MONGODB_URI;
+
+if (!url) {
+  throw new Error('MONGODB_URI is not set. Add it to your .env file before running this script.');
+}
 
 const client = new MongoClient(url, {
   serverApi: {

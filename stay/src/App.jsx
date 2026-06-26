@@ -15,6 +15,7 @@ import { UserContextProvider } from './UserContext.jsx';
 import PlacesPage from './pages/PlacesPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import PlacesPageFrom from './pages/PlacesPageFrom.jsx';
+import PlacePage from './pages/PlacePage.jsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path='/account/places' element={<PlacesPage/>}/>
             <Route path='/account/places/new' element={<PlacesPageFrom/>}/>
             <Route path='/account/places/:id' element={<PlacesPageFrom/>}/>
+            <Route path='/places/:id'element={<PlacePage/>}/>
           </Route>
         </Routes>
     </UserContextProvider>
