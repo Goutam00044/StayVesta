@@ -19,6 +19,16 @@ const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-me';
 const src = path.join(__dirname, 'uploads')
 
+function userDataFromReq(req){
+    return new Promise((resolve, reject)=>{
+        jwt.verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
+        if(err){
+            console.error(err);
+        }
+        resolve(userData);
+    })
+    })
+}
 
 app.use(cors({
     credentials: true,
@@ -244,28 +254,50 @@ app.get('/places',async(req,res)=>{
     res.json(await Place.find());
 })
 
-app.post('/booking',(req,res)=>{
+app.post('/booking',async(req,res)=>{
+    const userData = await userDataFromReq(req);
+    
     const { 
             place,
             checkIn,
             checkOut,
             numberGuest,
             name,
-            phone, price,} = req.body;
+            phone,
+            price
+        } = req.body;
 
-            Booking.create({ 
+    Booking.create({ 
             place,
             checkIn,
             checkOut,
             numberGuest,
             name,
-            phone, price,}).then((doc)=>{
+            phone,
+            price,
+            user: userData.id
+    }).then((doc)=>{
                 res.json(doc)
             }).catch((err)=>{
                 console.error(err);
             })
 
     
+})
+
+
+app.get('/bookings',async(req,res)=>{
+    try {
+        const userData = await userDataFromReq(req);
+        if (!userData?.id) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const bookings = await Booking.find({ user: userData.id }).populate('place');
+        res.json(bookings);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message || 'Failed to fetch bookings' });
+    }
 })
 
 app.listen(4000, () => {
