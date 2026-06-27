@@ -11,6 +11,7 @@ const imagedownloader = require('image-downloader');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const Place = require('./models/place');
+const Booking = require('./models/booking');
 
 const app = express();
 
@@ -242,6 +243,31 @@ app.put('/places',(req,res)=>{
 app.get('/places',async(req,res)=>{
     res.json(await Place.find());
 })
+
+app.post('/booking',(req,res)=>{
+    const { 
+            place,
+            checkIn,
+            checkOut,
+            numberGuest,
+            name,
+            phone, price,} = req.body;
+
+            Booking.create({ 
+            place,
+            checkIn,
+            checkOut,
+            numberGuest,
+            name,
+            phone, price,}).then((doc)=>{
+                res.json(doc)
+            }).catch((err)=>{
+                console.error(err);
+            })
+
+    
+})
+
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
 });

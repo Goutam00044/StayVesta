@@ -16,6 +16,8 @@ import PlacesPage from './pages/PlacesPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import PlacesPageFrom from './pages/PlacesPageFrom.jsx';
 import PlacePage from './pages/PlacePage.jsx';
+import BookedPage from './pages/BookedPage.jsx';
+import BookingPage from './pages/BookingPage.jsx';
 
 function App() {
   return (
@@ -30,7 +32,9 @@ function App() {
             <Route path='/account/places' element={<PlacesPage/>}/>
             <Route path='/account/places/new' element={<PlacesPageFrom/>}/>
             <Route path='/account/places/:id' element={<PlacesPageFrom/>}/>
-            <Route path='/places/:id'element={<PlacePage/>}/>
+            <Route path='/places/:id' element={<PlacePage/>}/>
+            <Route path='/account/booking/' element={<BookedPage/>} />
+            <Route path='/account/booking/:id' element={<BookingPage/>}/>
           </Route>
         </Routes>
     </UserContextProvider>
