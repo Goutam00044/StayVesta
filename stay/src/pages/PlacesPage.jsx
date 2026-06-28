@@ -14,7 +14,7 @@ export default function PlacesPage(){
     return(
        <div>
         <AccountNav/>
-            <div className="text-center">
+            <div className="text-center mt-3 mb-3">
                 <Link className='bg-amber-600 inline-flex text-white px-4 py-1 rounded-2xl gap-1' to={'/account/places/new'}> 
                     {/* Plus Icon */}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">

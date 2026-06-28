@@ -24,7 +24,7 @@ export default function Homepage()
                         <h2 className='px-0.5 font-bold'>{place.address}</h2>
                         <h3 className='px-0.5 text-sm text-gray-500'>{place.title}</h3>
                         <div className=''>
-                            <span className='font-bold'>${place.price}</span> per nigth
+                            <span className='font-bold'> ₹{place.price}</span> per nigth
                             </div>
                     </div>
                 </Link>
