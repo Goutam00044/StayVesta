@@ -9,7 +9,7 @@ export default function BookedPage()
         axios.get('/bookings').then(((response)=>{
             setbooking(response.data);
         }))
-    },[])
+    },[]);
     return(
         <div>
             <AccountNav/>

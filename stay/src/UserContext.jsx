@@ -6,6 +6,7 @@ export const UserContext = createContext({});
 export function UserContextProvider({children}){
     const [user, setUser] = useState(null);
     const [ready, setready] = useState(false);
+    const [pendingBooking, setPendingBooking] = useState(null);
     useEffect(() => {
         // Fetch current user once on mount. Rely on axios.defaults.withCredentials
         // being set early so the session cookie is sent.
@@ -30,7 +31,7 @@ export function UserContextProvider({children}){
     }, [user]);
     
     return(
-        <UserContext.Provider value={{user, setUser, ready}}>
+        <UserContext.Provider value={{user, setUser, ready, pendingBooking, setPendingBooking}}>
             {children} 
         </UserContext.Provider>
     )
