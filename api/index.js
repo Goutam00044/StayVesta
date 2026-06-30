@@ -1,31 +1,34 @@
-const process = require('dotenv').config();
-import express, { json, static } from 'express';
-import cors from 'cors';
-import { connect } from 'mongoose';
-import { findOne, create, findById } from './models/user';
-import { genSaltSync, hashSync, compareSync } from 'bcrypt';
-import { verify, sign } from 'jsonwebtoken';
-import { join, basename } from 'path';
-import multer from 'multer';
-import { image } from 'image-downloader';
-import cookieParser from 'cookie-parser';
-import { renameSync } from 'fs';
-import { create as _create, find, findById as _findById } from './models/place';
-import { create as __create, find as _find } from './models/booking';
-import Razorpay from "razorpay";
+require('dotenv').config();
+const express = require('express');
+const cors= require('cors');
+const mongoose= require('mongoose');
+const User = require('./models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const path = require('path');
+const multer  = require('multer');
+const imagedownloader = require('image-downloader');
+const cookieParser = require('cookie-parser');
+const fs = require('fs');
+const Place = require('./models/place');
+const Booking = require('./models/booking');
+const Razorpay = require("razorpay");
 
 const app = express();
 
-const bcryptSalt = genSaltSync(10);
+const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-me';
-const src = join(__dirname, 'uploads')
+const src = path.join(__dirname, 'uploads')
 
-
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 
 function userDataFromReq(req){
     return new Promise((resolve, reject)=>{
-        verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
+        jwt.verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
         if(err){
             console.error(err);
         }
@@ -39,8 +42,8 @@ app.use(cors({
     origin: 'http://localhost:5173',
 }));
 app.use(cookieParser());
-app.use(json());
-app.use('/uploads',static(src));
+app.use(express.json());
+app.use('/uploads',express.static(src));
 console.log(src);
 app.get("/test",(req,res)=>{
     res.json('test okay')
@@ -51,7 +54,7 @@ const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
     console.error('MONGODB_URI is not set. Add it to your .env file before starting the server.');
 } else {
-    connect(mongoUri)
+    mongoose.connect(mongoUri)
         .then(() => console.log('MongoDB connected successfully'))
         .catch(err => console.error('MongoDB connection error:', err.message));
 }
@@ -59,15 +62,15 @@ app.post('/register', async(req,res)=>{
     const {name,email,password}=req.body;
 
     try{
-        const existingUser = await findOne({ email });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(422).json({ error: 'Email already exists' });
         }
 
-        const userdoc = await create({
+        const userdoc = await User.create({
             name,
             email,
-            password: hashSync(password, bcryptSalt),
+            password: bcrypt.hashSync(password, bcryptSalt),
         });
 
         return res.json(userdoc);
@@ -82,11 +85,11 @@ app.post('/register', async(req,res)=>{
 
 app.post('/login', async(req, res) => {
     const { email, password } = req.body;
-    const userdoc = await findOne({email});
+    const userdoc = await User.findOne({email});
     if (userdoc) {
-        const passok = compareSync(password,userdoc.password);
+        const passok = bcrypt.compareSync(password,userdoc.password);
         if(passok){
-            sign({email:userdoc.email,id:userdoc._id}, jwtSecret, {}, (err,token)=>{
+            jwt.sign({email:userdoc.email,id:userdoc._id}, jwtSecret, {}, (err,token)=>{
                 if(err) throw err;
                 const isProduction = process.env.NODE_ENV === 'production';
                 // During local development setting SameSite=None requires Secure=true (HTTPS),
@@ -110,11 +113,11 @@ app.post('/login', async(req, res) => {
 app.get('/profile', (req,res)=>{
     const {token}= req.cookies;
     if(token){
-        verify(token, jwtSecret, {}, async(err, userData) => {
+        jwt.verify(token, jwtSecret, {}, async(err, userData) => {
             if(err){
                 return res.status(401).json(null);
             } 
-            const {name,email,_id} = await findById(userData.id);
+            const {name,email,_id} = await User.findById(userData.id);
             return res.json({name,email,_id});
         });
     }
@@ -130,10 +133,10 @@ app.post('/logout',(req,res)=>{
 app.post('/upload-link', async (req, res) => {
     const { link } = req.body;
     const newname = 'photo' + Date.now() + '.jpg';
-    const dest = join(__dirname, 'uploads', newname);
+    const dest = path.join(__dirname, 'uploads', newname);
 
     try {
-        await image({
+        await imagedownloader.image({
             url: link,
             dest,
         });
@@ -143,7 +146,7 @@ app.post('/upload-link', async (req, res) => {
     }
 });
 
-const photosmiddleware = multer({ dest: join(__dirname, 'uploads') });
+const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
 app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
     const uploadedfiles =[];
     for (let i = 0; i < req.files.length; i++) {
@@ -154,9 +157,9 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
         // Set fileName with '.extension'
         const newPath = filePath + '.' + ext;
         console.log(newPath);
-        renameSync(filePath, newPath);
+        fs.renameSync(filePath, newPath);
         // Always return only the base filename (no directories or 'uploads' prefix)
-        uploadedfiles.push(basename(newPath));
+        uploadedfiles.push(path.basename(newPath));
     }
     res.json(uploadedfiles);
 
@@ -168,11 +171,11 @@ app.post('/places',(req,res)=>{
     const {token}= req.cookies;
     const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests,price} = req.body;
     
-    verify(token,jwtSecret,{},async(err, userData)=>{
+    jwt.verify(token,jwtSecret,{},async(err, userData)=>{
         if(err){
             console.error(err);
         } 
-        await _create({
+        await Place.create({
             owner: userData.id,
             title,
             address,
@@ -191,12 +194,12 @@ app.post('/places',(req,res)=>{
 
 app.get('/user-places',(req,res)=>{
     const {token} = req.cookies;
-    verify(token, jwtSecret, {}, async (err, userData) => {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const places = await find({ owner: userData.id });
+        const places = await Place.find({ owner: userData.id });
         res.json(places);
     });
 });
@@ -204,7 +207,7 @@ app.get('/user-places',(req,res)=>{
 app.get('/places/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const placeDoc = await _findById(id);
+        const placeDoc = await Place.findById(id);
         if (!placeDoc) {
             return res.status(404).json({ error: 'Place not found' });
         }
@@ -229,12 +232,12 @@ app.put('/places',(req,res)=>{
             maxGuests,
             price,
         } = req.body;
-    verify(token, jwtSecret, {}, async (err, userData) => {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const placeDoc = await _findById(id);
+        const placeDoc = await Place.findById(id);
         if(userData.id=== (placeDoc.owner.toString())){
             placeDoc.set({
                 title,
@@ -255,7 +258,7 @@ app.put('/places',(req,res)=>{
 })
 
 app.get('/places',async(req,res)=>{
-    res.json(await find());
+    res.json(await Place.find());
 })
 
 app.post('/booking',async(req,res)=>{
@@ -271,7 +274,7 @@ app.post('/booking',async(req,res)=>{
             price
         } = req.body;
 
-    __create({ 
+    Booking.create({ 
             place,
             checkIn,
             checkOut,
@@ -296,7 +299,7 @@ app.get('/bookings',async(req,res)=>{
         if (!userData?.id) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const bookings = await _find({ user: userData.id }).populate('place');
+        const bookings = await Booking.find({ user: userData.id }).populate('place');
         res.json(bookings);
     } catch (e) {
         console.error(e);

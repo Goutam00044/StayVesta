@@ -43,24 +43,41 @@ export default function BookingPage() {
         return response.data;
     }
 
-    async function handlePayClick() {
-        if (!pendingBooking) return;
-        setIsLoading(true);
-        try {
-            const { data: order } = await axios.post('/create-order', pendingBooking);
-            console.log(order);
-            //await book();
-            // clear temporary booking
-            setPendingBooking(null);
-            // open booked places page
-            setredirect('/account/booking');
-        } catch (err) {
-            console.error(err);
-            alert("Booking failed.");
-        } finally {
-            setIsLoading(false);
-        }
+   async function handlePayClick() {
+    if (!pendingBooking) return;
+    setIsLoading(true);
+    try {
+        const { data: order } = await axios.post(
+            "/create-order",
+            pendingBooking
+        );
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: "StayVesta",
+            description: "Accommodation Booking",
+            order_id: order.id,
+            prefill: {
+                name: pendingBooking.name,
+                contact: pendingBooking.phone,
+            },
+            theme: {
+                color: "#d97706",
+            },
+            handler: async function (response) {
+                console.log("Payment Success");
+                console.log(response);
+            },
+        };
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+    } catch (err) {
+        console.log(err);
+    } finally {
+        setIsLoading(false);
     }
+}
 
     if (redirect) {
         return <Navigate to={redirect} />;
