@@ -44,32 +44,22 @@ export default function BookingPage() {
     }
 
     async function handlePayClick() {
-
         if (!pendingBooking) return;
-
         setIsLoading(true);
-
         try {
-
-            await book();
-
+            const { data: order } = await axios.post('/create-order', pendingBooking);
+            console.log(order);
+            //await book();
             // clear temporary booking
             setPendingBooking(null);
-
             // open booked places page
             setredirect('/account/booking');
-
         } catch (err) {
-
             console.error(err);
             alert("Booking failed.");
-
         } finally {
-
             setIsLoading(false);
-
         }
-
     }
 
     if (redirect) {

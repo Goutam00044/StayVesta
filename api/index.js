@@ -1,27 +1,31 @@
-require('dotenv').config();
-const express = require('express');
-const cors= require('cors');
-const mongoose= require('mongoose');
-const User = require('./models/user');
-const bcrypt = require('bcrypt');
-const jwt= require('jsonwebtoken');
-const path = require('path');
-const multer  = require('multer');
-const imagedownloader = require('image-downloader');
-const cookieParser = require('cookie-parser');
-const fs = require('fs');
-const Place = require('./models/place');
-const Booking = require('./models/booking');
+const process = require('dotenv').config();
+import express, { json, static } from 'express';
+import cors from 'cors';
+import { connect } from 'mongoose';
+import { findOne, create, findById } from './models/user';
+import { genSaltSync, hashSync, compareSync } from 'bcrypt';
+import { verify, sign } from 'jsonwebtoken';
+import { join, basename } from 'path';
+import multer from 'multer';
+import { image } from 'image-downloader';
+import cookieParser from 'cookie-parser';
+import { renameSync } from 'fs';
+import { create as _create, find, findById as _findById } from './models/place';
+import { create as __create, find as _find } from './models/booking';
+import Razorpay from "razorpay";
 
 const app = express();
 
-const bcryptSalt = bcrypt.genSaltSync(10);
+const bcryptSalt = genSaltSync(10);
 const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-me';
-const src = path.join(__dirname, 'uploads')
+const src = join(__dirname, 'uploads')
+
+
+
 
 function userDataFromReq(req){
     return new Promise((resolve, reject)=>{
-        jwt.verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
+        verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
         if(err){
             console.error(err);
         }
@@ -35,8 +39,8 @@ app.use(cors({
     origin: 'http://localhost:5173',
 }));
 app.use(cookieParser());
-app.use(express.json());
-app.use('/uploads',express.static(src));
+app.use(json());
+app.use('/uploads',static(src));
 console.log(src);
 app.get("/test",(req,res)=>{
     res.json('test okay')
@@ -47,7 +51,7 @@ const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
     console.error('MONGODB_URI is not set. Add it to your .env file before starting the server.');
 } else {
-    mongoose.connect(mongoUri)
+    connect(mongoUri)
         .then(() => console.log('MongoDB connected successfully'))
         .catch(err => console.error('MongoDB connection error:', err.message));
 }
@@ -55,15 +59,15 @@ app.post('/register', async(req,res)=>{
     const {name,email,password}=req.body;
 
     try{
-        const existingUser = await User.findOne({ email });
+        const existingUser = await findOne({ email });
         if (existingUser) {
             return res.status(422).json({ error: 'Email already exists' });
         }
 
-        const userdoc = await User.create({
+        const userdoc = await create({
             name,
             email,
-            password: bcrypt.hashSync(password, bcryptSalt),
+            password: hashSync(password, bcryptSalt),
         });
 
         return res.json(userdoc);
@@ -78,11 +82,11 @@ app.post('/register', async(req,res)=>{
 
 app.post('/login', async(req, res) => {
     const { email, password } = req.body;
-    const userdoc = await User.findOne({email});
+    const userdoc = await findOne({email});
     if (userdoc) {
-        const passok = bcrypt.compareSync(password,userdoc.password);
+        const passok = compareSync(password,userdoc.password);
         if(passok){
-            jwt.sign({email:userdoc.email,id:userdoc._id}, jwtSecret, {}, (err,token)=>{
+            sign({email:userdoc.email,id:userdoc._id}, jwtSecret, {}, (err,token)=>{
                 if(err) throw err;
                 const isProduction = process.env.NODE_ENV === 'production';
                 // During local development setting SameSite=None requires Secure=true (HTTPS),
@@ -106,11 +110,11 @@ app.post('/login', async(req, res) => {
 app.get('/profile', (req,res)=>{
     const {token}= req.cookies;
     if(token){
-        jwt.verify(token, jwtSecret, {}, async(err, userData) => {
+        verify(token, jwtSecret, {}, async(err, userData) => {
             if(err){
                 return res.status(401).json(null);
             } 
-            const {name,email,_id} = await User.findById(userData.id);
+            const {name,email,_id} = await findById(userData.id);
             return res.json({name,email,_id});
         });
     }
@@ -126,10 +130,10 @@ app.post('/logout',(req,res)=>{
 app.post('/upload-link', async (req, res) => {
     const { link } = req.body;
     const newname = 'photo' + Date.now() + '.jpg';
-    const dest = path.join(__dirname, 'uploads', newname);
+    const dest = join(__dirname, 'uploads', newname);
 
     try {
-        await imagedownloader.image({
+        await image({
             url: link,
             dest,
         });
@@ -139,7 +143,7 @@ app.post('/upload-link', async (req, res) => {
     }
 });
 
-const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
+const photosmiddleware = multer({ dest: join(__dirname, 'uploads') });
 app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
     const uploadedfiles =[];
     for (let i = 0; i < req.files.length; i++) {
@@ -150,9 +154,9 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
         // Set fileName with '.extension'
         const newPath = filePath + '.' + ext;
         console.log(newPath);
-        fs.renameSync(filePath, newPath);
+        renameSync(filePath, newPath);
         // Always return only the base filename (no directories or 'uploads' prefix)
-        uploadedfiles.push(path.basename(newPath));
+        uploadedfiles.push(basename(newPath));
     }
     res.json(uploadedfiles);
 
@@ -164,11 +168,11 @@ app.post('/places',(req,res)=>{
     const {token}= req.cookies;
     const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests,price} = req.body;
     
-    jwt.verify(token,jwtSecret,{},async(err, userData)=>{
+    verify(token,jwtSecret,{},async(err, userData)=>{
         if(err){
             console.error(err);
         } 
-        await Place.create({
+        await _create({
             owner: userData.id,
             title,
             address,
@@ -187,12 +191,12 @@ app.post('/places',(req,res)=>{
 
 app.get('/user-places',(req,res)=>{
     const {token} = req.cookies;
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const places = await Place.find({ owner: userData.id });
+        const places = await find({ owner: userData.id });
         res.json(places);
     });
 });
@@ -200,7 +204,7 @@ app.get('/user-places',(req,res)=>{
 app.get('/places/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const placeDoc = await Place.findById(id);
+        const placeDoc = await _findById(id);
         if (!placeDoc) {
             return res.status(404).json({ error: 'Place not found' });
         }
@@ -225,12 +229,12 @@ app.put('/places',(req,res)=>{
             maxGuests,
             price,
         } = req.body;
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const placeDoc = await Place.findById(id);
+        const placeDoc = await _findById(id);
         if(userData.id=== (placeDoc.owner.toString())){
             placeDoc.set({
                 title,
@@ -251,7 +255,7 @@ app.put('/places',(req,res)=>{
 })
 
 app.get('/places',async(req,res)=>{
-    res.json(await Place.find());
+    res.json(await find());
 })
 
 app.post('/booking',async(req,res)=>{
@@ -267,7 +271,7 @@ app.post('/booking',async(req,res)=>{
             price
         } = req.body;
 
-    Booking.create({ 
+    __create({ 
             place,
             checkIn,
             checkOut,
@@ -292,13 +296,39 @@ app.get('/bookings',async(req,res)=>{
         if (!userData?.id) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const bookings = await Booking.find({ user: userData.id }).populate('place');
+        const bookings = await _find({ user: userData.id }).populate('place');
         res.json(bookings);
     } catch (e) {
         console.error(e);
         res.status(500).json({ error: e.message || 'Failed to fetch bookings' });
     }
 })
+
+app.post('/create-order', async (req, res) => {
+    const {
+        place,
+        checkIn,
+        checkOut,
+        numberGuest,
+        name,
+        phone,
+        price
+    } = req.body;
+    try {
+        const options = {
+            amount: price * 100,
+            currency: "INR",
+            //receipt: `receipt_${Date.now()}`
+        };
+        const order = await razorpay.orders.create(options);
+        res.json(order);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Unable to create order"
+        });
+    }
+});
 
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
