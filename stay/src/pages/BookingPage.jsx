@@ -49,7 +49,7 @@ export default function BookingPage() {
     try {
         const { data: order } = await axios.post(
             "/create-order",
-            pendingBooking
+            pendingBooking  
         );
         const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -68,8 +68,26 @@ export default function BookingPage() {
             handler: async function (response) {
                 console.log("Payment Success");
                 console.log(response);
-            },
-        };
+                const { data } = await axios.post("/verify-payment",response);
+                if (data.success) {
+                // Create booking
+                await axios.post("/booking", {
+                    place: pendingBooking.place._id,
+                    checkIn: pendingBooking.checkIn,
+                    checkOut: pendingBooking.checkOut,
+                    numberGuest: pendingBooking.numberGuest,
+                    name: pendingBooking.name,
+                    phone: pendingBooking.phone,
+                    price: pendingBooking.price,
+                });
+                setPendingBooking(null);
+                setredirect("/account/booking");
+            } 
+            else{
+                  alert("Payment verification failed.");  
+            }
+        },
+    }
         const razorpay = new window.Razorpay(options);
         razorpay.open();
     } catch (err) {

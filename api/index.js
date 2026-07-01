@@ -13,6 +13,7 @@ const fs = require('fs');
 const Place = require('./models/place');
 const Booking = require('./models/booking');
 const Razorpay = require("razorpay");
+const crypto = require("crypto");
 
 const app = express();
 
@@ -329,6 +330,26 @@ app.post('/create-order', async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: "Unable to create order"
+        });
+    }
+});
+
+app.post('/verify-payment', async(req, res) => {
+    const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature
+    } = req.body; //recieve these values from the frontend after payment completion 
+     const generatedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(razorpay_order_id + "|" + razorpay_payment_id).digest("hex");
+    if(generatedSignature === razorpay_signature) {
+        res.json({
+            success: true
+        });
+    } else {
+        res.status(400).json({
+            success: false
         });
     }
 });
