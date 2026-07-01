@@ -2,14 +2,14 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { differenceInCalendarDays } from "date-fns";
+import CancelBookingModel from "../component/CancelBookingModal";
 
 
 export default function BookedDetailsPage() {
 
     const { id } = useParams();
-
     const [bookinfo, setBookinfo] = useState(null);
-
+    const [showCancelModal, setShowCancelModal] = useState(false);
     useEffect(() => {
 
         axios.get(`/bookings/${id}`).then(response => {
@@ -22,8 +22,29 @@ export default function BookedDetailsPage() {
         return <div>Loading...</div>;
     }
 
+    async function cancelBooking() {
+        console.log("Cancel Clicked")
+        try {
+            const { data } = await axios.patch(
+                `/bookings/${bookinfo._id}/cancel`
+            );
+            setBookinfo(data);
+            setShowCancelModal(false);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to cancel booking.");
+        }
+    }
+    console.log(showCancelModal);
     return (
         <>
+            {showCancelModal && (
+                <CancelBookingModel
+                    booking={bookinfo}
+                    onClose={() => {setShowCancelModal(false)}}
+                    onConfirm={cancelBooking}
+                />
+            )}
             <div className="mt-4">
                 <a
                     href="/account/booked"
@@ -153,6 +174,15 @@ export default function BookedDetailsPage() {
                                 </span>
                             </div>
                         </div>
+                    </div>
+                     <hr />
+                    <div>
+                         <button
+                            onClick={()=>{setShowCancelModal(true)}}
+                            className="mt-5 w-full primary"
+                        >
+                            Cancel Booking
+                        </button>
                     </div>
                 </div>
             </div>

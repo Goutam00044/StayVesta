@@ -381,6 +381,38 @@ app.get('/bookings/:id', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+
+app.patch('/bookings/:id/cancel', async (req, res) => {
+    try {
+        const userData = await userDataFromReq(req);
+        const { id } = req.params;
+        const booking = await Booking.findOneAndUpdate(
+            {
+                _id: id,
+                user: userData.id,
+            },
+            {
+                bookingStatus: "Cancelled",
+            },
+            {
+                new: true,
+            }
+        ).populate("place");
+        if (!booking) {
+            return res.status(404).json({
+                error: "Booking not found",
+            });
+        }
+        res.json(booking);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: err.message,
+        });
+    }
+});
+
+
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
 });
