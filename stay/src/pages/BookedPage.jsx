@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AccountNav from '../component/AccountNav';
 import axios from 'axios';
 import {differenceInCalendarDays, differenceInDays, format} from 'date-fns'
+import { Link } from 'react-router-dom';
 export default function BookedPage()
 {
     const [booking, setbooking] = useState([]);
@@ -15,7 +16,8 @@ export default function BookedPage()
             <AccountNav/>
             <div className='mt-4'>
                 {booking?.length > 0 && booking.map(booking => (
-                    <div key={booking._id} className="flex bg-gray-200 gap-4 mb-2 overflow-hidden rounded">
+                    <Link to={`/account/booked/${booking._id}`} 
+                        key={booking._id} className="flex bg-gray-200 gap-4 mb-2 overflow-hidden rounded">
                         <div className='w-48'>
                             <img src={"http://localhost:4000/uploads/"+booking.place.photos?.[0]} alt="" />
                         </div>
@@ -33,7 +35,7 @@ export default function BookedPage()
                             </div>
                         </div>
                         
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

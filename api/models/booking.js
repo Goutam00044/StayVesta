@@ -9,6 +9,15 @@ const BookingSchema = mongoose.Schema({
     name:{type:String,required:true},
     phone:{type:String,required:true},
     price:Number,
+    //razorpay
+    paymentStatus:{type:String,default:"Pending",},
+    razorpayOrderId:String,
+    razorpayPaymentId:String,
+    bookingStatus: {
+    type: String,
+    enum: ["Confirmed", "Cancelled"],
+    default: "Confirmed",
+},
 });
 
 const BookingModel = mongoose.model('Booking',BookingSchema);

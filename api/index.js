@@ -272,7 +272,10 @@ app.post('/booking',async(req,res)=>{
             numberGuest,
             name,
             phone,
-            price
+            price,
+            paymentStatus,
+            razorpayOrderId,
+            razorpayPaymentId,
         } = req.body;
 
     Booking.create({ 
@@ -283,7 +286,10 @@ app.post('/booking',async(req,res)=>{
             name,
             phone,
             price,
-            user: userData.id
+            user: userData.id,
+            paymentStatus,
+            razorpayOrderId,
+            razorpayPaymentId,
     }).then((doc)=>{
                 res.json(doc)
             }).catch((err)=>{
@@ -354,6 +360,27 @@ app.post('/verify-payment', async(req, res) => {
     }
 });
 
+app.get('/bookings/:id', async (req, res) => {
+    try {
+        const userData = await userDataFromReq(req);
+        const { id } = req.params;
+
+        const booking = await Booking.findOne({
+            _id: id,
+            user: userData.id,
+        }).populate('place');
+
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+
+        res.json(booking);
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+    }
+});
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
 });
