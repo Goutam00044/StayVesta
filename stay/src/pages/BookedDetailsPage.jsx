@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { differenceInCalendarDays, format } from "date-fns";
 import CancelBookingModel from "../component/CancelBookingModal";
-
+import RefundStatusModal from "../component/RefundStatusModal";
 
 export default function BookedDetailsPage() {
 
     const { id } = useParams();
     const [bookinfo, setBookinfo] = useState(null);
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showRefundModal, setShowRefundModal] = useState(false);
     useEffect(() => {
 
         axios.get(`/bookings/${id}`).then(response => {
@@ -43,6 +44,12 @@ export default function BookedDetailsPage() {
                     booking={bookinfo}
                     onClose={() => {setShowCancelModal(false)}}
                     onConfirm={cancelBooking}
+                />
+            )}
+            {showRefundModal && (
+                <RefundStatusModal
+                    booking={bookinfo}
+                    onClose={() => setShowRefundModal(false)}
                 />
             )}
             <div className="mt-4">
@@ -202,21 +209,30 @@ export default function BookedDetailsPage() {
                         </div>
                     </div>
                      <hr />
-                    <div>
-                         {bookinfo.bookingStatus === "Confirmed" ? (
-                                <button
-                                    onClick={() => setShowCancelModal(true)}
-                                    className="w-full bg-red-500 text-white px-3 py-1 rounded-l-2xl rounded-r-2xl"
-                                >
-                                    Cancel Booking
-                                </button>
-                            ) : (
+                    <div className="mt-4">
+                        {bookinfo.bookingStatus === "Confirmed" ? (
+
+                            <button
+                                onClick={() => setShowCancelModal(true)}
+                                className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium"
+                            >
+                                Cancel Booking
+                            </button>
+                        ) : (
+                            <div className="flex gap-3">
                                 <button
                                     disabled
-                                    className="w-full bg-gray-500 text-white px-3 py-1 rounded-l-2xl rounded-r-2xl cursor-not-allowed"
+                                    className="flex-1 bg-gray-300 text-gray-600 py-2 rounded-xl cursor-not-allowed font-medium"
                                 >
                                     Booking Cancelled
                                 </button>
+                                <button
+                                    onClick={() => setShowRefundModal(true)}
+                                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-medium"
+                                >
+                                    Track Refund
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
