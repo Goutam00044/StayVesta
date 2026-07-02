@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import CancelBookingModel from "../component/CancelBookingModal";
 
 
@@ -59,7 +59,7 @@ export default function BookedDetailsPage() {
                     Check the booking details before payment information.                
                 </p>
             </div>
-            <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-200 bg-white">
+            <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-300 shadow-sm hover:shadow-2xl bg-white">
                 {/* Left */}
 
                 <div className="md:w-5/12 relative min-h-64">
@@ -82,25 +82,47 @@ export default function BookedDetailsPage() {
                 {/* Right */}
 
                 <div className="md:w-7/12 flex flex-col gap-5 p-6">
+                <div>
+                        <p className="text-xs font-medium text-black uppercase tracking-widest mb-3">
+                            Property details
+                        <div className="border-t w-40 mt-2">
+                        </div>
+                        </p>
+                        
+                        <div className="divide-y divide-gray-100">
+                            <div className="flex justify-between py-2.5">
+                                <span>{bookinfo.place.title}</span>
+                                <span></span>
+                            </div>
+
+                            <div className="flex justify-between py-2.5">
+                                <span>{bookinfo.place.address}</span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
                     <div>
                         <p className="text-xs font-medium text-black uppercase tracking-widest mb-3">
-                            Booking details
+                            Guest details
+                        <div className="border-t w-40 mt-2">
+                        </div>
                         </p>
 
                         <div className="divide-y divide-gray-100">
                             <div className="flex justify-between py-2.5">
-                                <span>Name</span>
+                                <span>Guest Name</span>
                                 <span>{bookinfo.name}</span>
                             </div>
 
                             <div className="flex justify-between py-2.5">
                                 <span>Check In</span>
-                                <span>{bookinfo.checkIn}</span>
+                                <span>{format(new Date(bookinfo.checkIn), "dd MMM yyyy")}</span>
                             </div>
 
                             <div className="flex justify-between py-2.5">
                                 <span>Check Out</span>
-                                <span>{bookinfo.checkOut}</span>
+                                <span>{format(new Date(bookinfo.checkOut), "dd MMM yyyy")}</span>
                             </div>
 
                             <div className="flex justify-between py-2.5">
@@ -115,6 +137,8 @@ export default function BookedDetailsPage() {
                     <div>
                         <p className="text-xs font-medium uppercase tracking-widest mb-3">
                             Amount Summary
+                        <div className="border-t w-40 mt-2">
+                        </div>
                         </p>
 
                         <div className="divide-y divide-gray-100">
@@ -147,11 +171,13 @@ export default function BookedDetailsPage() {
                     <div className="mt-auto">
                         <p className="text-xs font-medium uppercase tracking-widest mb-3">
                             Payment Information
+                            <div className="border-t w-40 mt-2">
+                            </div>
                         </p>
                         <div className="divide-y divide-gray-100">
                             <div className="flex justify-between py-2.5">
                                 <span>Payment Status</span>
-                                <span className="font-semibold text-green-600">
+                                <span className={`font-semibold ${bookinfo.paymentStatus === 'Paid' ? 'text-green-600' : 'text-red-600'}`}>
                                     {bookinfo.paymentStatus}
                                 </span>
                             </div>
@@ -177,12 +203,21 @@ export default function BookedDetailsPage() {
                     </div>
                      <hr />
                     <div>
-                         <button
-                            onClick={()=>{setShowCancelModal(true)}}
-                            className="mt-5 w-full primary"
-                        >
-                            Cancel Booking
-                        </button>
+                         {bookinfo.bookingStatus === "Confirmed" ? (
+                                <button
+                                    onClick={() => setShowCancelModal(true)}
+                                    className="w-full bg-red-500 text-white px-3 py-1 rounded-l-2xl rounded-r-2xl"
+                                >
+                                    Cancel Booking
+                                </button>
+                            ) : (
+                                <button
+                                    disabled
+                                    className="w-full bg-gray-500 text-white px-3 py-1 rounded-l-2xl rounded-r-2xl cursor-not-allowed"
+                                >
+                                    Booking Cancelled
+                                </button>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import { UserContext } from "../UserContext.jsx";
 
 export default function BookingPage() {
@@ -153,12 +153,12 @@ export default function BookingPage() {
 
                             <div className="flex justify-between py-2.5">
                                 <span>Check In</span>
-                                <span>{bookinfo.checkIn}</span>
+                                <span>{format(new Date(bookinfo.checkIn), "dd MMM yyyy")}</span>
                             </div>
 
                             <div className="flex justify-between py-2.5">
                                 <span>Check Out</span>
-                                <span>{bookinfo.checkOut}</span>
+                                <span>{format(new Date(bookinfo.checkOut), "dd MMM yyyy")}</span>
                             </div>
 
                             <div className="flex justify-between py-2.5">
