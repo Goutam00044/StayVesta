@@ -118,7 +118,7 @@ export default function BookedPage()
 
                                     </div>
                                     <Link to={`/account/booked/${booking._id}`}>    
-                                    <span className="text-amber-600 font-semibold  hover:text-amber-500 transition">
+                                    <span className="flex-1 bg-amber-600 px-4 py-3 rounded text-white text-sm font-medium hover:bg-amber-500">
                                         View Details →
                                     </span>
                                     </Link>

@@ -26,16 +26,22 @@ const razorpay = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+function userDataFromReq(req) {
+    return new Promise((resolve, reject) => {
+        const token = req.cookies?.token;
 
-function userDataFromReq(req){
-    return new Promise((resolve, reject)=>{
-        jwt.verify(req.cookies.token,jwtSecret,{},(err,userData)=>{
-        if(err){
-            console.error(err);
+        if (!token) {
+            return reject(new Error("No token provided"));
         }
-        resolve(userData);
-    })
-    })
+
+        jwt.verify(token, jwtSecret, {}, (err, userData) => {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve(userData);
+        });
+    });
 }
 
 app.use(cors({
@@ -257,10 +263,31 @@ app.put('/places',(req,res)=>{
         res.json('ok');
     });
 })
-
-app.get('/places',async(req,res)=>{
-    res.json(await Place.find());
-})
+// Get Places Data & Also Search Support from MongoDB
+app.get('/places', async (req, res) => {
+    const { destination } = req.query;
+    let filter = {};
+    if (destination && destination.trim() !== "") {
+        filter = {
+            $or: [
+                {
+                    title: {
+                        $regex: destination,
+                        $options: "i",
+                    },
+                },
+                {
+                    address: {
+                        $regex: destination,
+                        $options: "i",
+                    },
+                },
+            ],
+        };
+    }
+    const places = await Place.find(filter);
+    res.json(places);
+});
 
 app.post('/booking',async(req,res)=>{
     const userData = await userDataFromReq(req);

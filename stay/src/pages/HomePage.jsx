@@ -2,17 +2,43 @@ import Header from '../component/Header';
 import Layout from '../component/Layout';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 export default function Homepage()
 {   
+    const location = useLocation();
     const [places, setplaces] = useState([]);
-    useEffect(()=>{
-        axios.get('/places').then(response=>{
+    
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const destination = params.get("destination");
+        const checkIn = params.get("checkIn");
+        const checkOut = params.get("checkOut");
+        const guests = params.get("guests");
+        axios.get("/places", {
+            params: {
+                destination,
+                checkIn,
+                checkOut,
+                guests,
+            },
+        }).then((response) => {
             setplaces(response.data);
-        })
-    },[])
+        });
+    }, [location.search]);
+
     return(
         <div className='mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8'>
+            {places.length === 0 && (
+                <div className="col-span-full text-center py-20">
+                    <h2 className="text-2xl font-semibold">
+                        No places found
+                    </h2>
+
+                    <p className="text-gray-500 mt-2">
+                        Try searching for another destination.
+                    </p>
+                </div>
+            )}
             {places.length > 0 && places.map(place => (
 
                 <Link to={'/places/'+place._id} key={place._id}>
