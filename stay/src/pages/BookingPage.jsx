@@ -17,7 +17,7 @@ export default function BookingPage() {
             setbookinfo(pendingBooking);
         }
     }, [pendingBooking]);
-
+    // Never Used function, but it been used before to create booking without payment gateway
     async function book(){
         if (!pendingBooking) return;
         const response = await axios.post('/booking', {

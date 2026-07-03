@@ -1,9 +1,10 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 
 export default function Header() {
     const {user}= useContext(UserContext);
+    const location = useLocation();
     const navigate = useNavigate();
     const [destination, setDestination] = useState("");
     const [checkIn, setCheckIn] = useState("");
@@ -23,6 +24,16 @@ export default function Header() {
               console.log(params);
             navigate("/?" + params.toString());
     }
+
+    useEffect(()=>{
+        const params = new URLSearchParams(location.search);
+        setDestination(params.get("destination") || "");
+        setCheckIn(params.get("checkIn") || "");
+        setCheckOut(params.get("checkOut") || "");
+        setGuests(params.get("guests") || 1);
+
+    }, [location.search]);
+
     return(
         <>
         <header className="mb-4 flex items-center justify-between">

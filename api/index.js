@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const Place = require('./models/place');
 const Booking = require('./models/booking');
-const Razorpay = require("razorpay");
+const Razorpay = require("razorpay");   
 const crypto = require("crypto");
 
 const app = express();
@@ -265,28 +265,61 @@ app.put('/places',(req,res)=>{
 })
 // Get Places Data & Also Search Support from MongoDB
 app.get('/places', async (req, res) => {
-    const { destination } = req.query;
+
+    const { destination, guests, checkIn, checkOut } = req.query;
+
     let filter = {};
+
+    // Destination filter
     if (destination && destination.trim() !== "") {
-        filter = {
-            $or: [
-                {
-                    title: {
-                        $regex: destination,
-                        $options: "i",
-                    },
+        filter.$or = [
+            {
+                title: {
+                    $regex: destination,
+                    $options: "i",
                 },
-                {
-                    address: {
-                        $regex: destination,
-                        $options: "i",
-                    },
+            },
+            {
+                address: {
+                    $regex: destination,
+                    $options: "i",
                 },
-            ],
+            },
+        ];
+    }
+
+    // Guest filter
+    if (guests) {
+        filter.maxGuests = {
+            $gte: Number(guests),
         };
     }
+
     const places = await Place.find(filter);
-    res.json(places);
+    const confirmedBookings = await Booking.find({
+        bookingStatus: "Confirmed",
+    });
+    console.log(confirmedBookings);
+    let availablePlaces = places;
+
+    if (checkIn && checkOut) {
+        availablePlaces = places.filter(place => {
+        const hasConflict = confirmedBookings.some(booking => {
+            return (
+                booking.place.toString() === place._id.toString() &&
+                new Date(booking.checkIn) < new Date(checkOut) &&
+                new Date(booking.checkOut) > new Date(checkIn)
+            );
+        });
+        return !hasConflict;
+    });
+    }
+    res.json(availablePlaces);
+// This checks every place.
+// For each place it asks:
+// "Does this place have any confirmed booking that overlaps the requested dates?"
+// If yes, remove it.
+// If no, keep it.
 });
 
 app.post('/booking',async(req,res)=>{
@@ -325,7 +358,6 @@ app.post('/booking',async(req,res)=>{
 
     
 })
-
 
 app.get('/bookings',async(req,res)=>{
     try {
