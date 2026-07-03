@@ -3,6 +3,9 @@
 input[type='text'],input[type='password'],input[type='email'],textarea,input[type='number'],input[type='tel']{
     @apply w-full border my-2 py-2 px-3 rounded-md;
 }
+input[type='text'].search,input[type='number'].search{
+    @apply h-6 outline-none border-none;
+}
 textarea{
     @apply h-30;
 }
