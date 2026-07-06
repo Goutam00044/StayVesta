@@ -65,7 +65,7 @@ if (!mongoUri) {
         .then(() => console.log('MongoDB connected successfully'))
         .catch(err => console.error('MongoDB connection error:', err.message));
 }
-app.post('/register', async(req,res)=>{
+app.post('/signup', async(req,res)=>{
     const {name,email,password}=req.body;
 
     try{

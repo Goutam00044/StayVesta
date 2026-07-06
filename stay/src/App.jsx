@@ -3,9 +3,9 @@ import './App.css';
 import {Routes,Route} from 'react-router-dom';
 import Header from './component/Header.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import SignupPage from './pages/SignupPage.jsx';
 import Homepage from './pages/HomePage.jsx';
 import Layout from './component/Layout.jsx';
-import RegisterPage from './pages/RegisterPage.jsx';
 import axios, { Axios } from 'axios';
 // Ensure axios defaults are set as early as possible so requests
 // from context/providers include credentials and the correct base URL.
@@ -27,7 +27,7 @@ function App() {
           <Route path='/' element={<Layout/>}>
             <Route path='/' element={<Homepage/>}/>
             <Route path='/login' element={<LoginPage/>}/>
-            <Route path='/register' element={<RegisterPage/>}/>
+            <Route path='/signup' element={<SignupPage/>}/>
             <Route path='/account/' element={<ProfilePage/>}/>
             <Route path='/account/:subpage' element={<ProfilePage/>}/>
             <Route path='/account/places' element={<PlacesPage/>}/>

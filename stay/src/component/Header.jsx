@@ -52,9 +52,14 @@ export default function Header() {
               {user.name}
             </Link>
           )}
-          <Link to="/login" className="font-bold">Log in</Link>
-          <Link to="/register" className="font-bold">Sign up</Link>
-          <button className='border border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl'>Become a host</button>
+          {!user &&(
+            <>
+            <Link to="/login" className="font-bold">Log in</Link>
+            <Link to="/signup" className="font-bold">Sign up</Link>
+            </>   
+          )}
+          
+          <button className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl'>Become a host</button>
         </div>
       </header>
 

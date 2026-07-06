@@ -10,6 +10,47 @@ textarea{
     @apply h-30;
 }
 button.primary{
-    @apply w-full bg-amber-600 text-white px-3 py-1 rounded-l-2xl rounded-r-2xl;
+    @apply w-full bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-full font-semibold transition;
     
+}
+
+/* Floating Label Styles */
+.form-group {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input[type='text'],
+.form-group input[type='password'],
+.form-group input[type='email'],
+.form-group input[type='number'],
+.form-group input[type='tel'] {
+    padding: 1rem 0.75rem !important; /* balanced padding */
+}
+
+.form-group label {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #666;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background-color: white;
+    padding: 0 0.25rem;
+}
+
+/* Float label when input has focus or value */
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+    top: -0.625rem;
+    transform: translateY(0);
+    font-size: 0.875rem;
+    color: #b45309;
+    font-weight: 500;
+}
+
+.form-group input:focus {
+    @apply border-amber-600;
 }
