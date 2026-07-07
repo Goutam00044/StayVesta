@@ -12,12 +12,18 @@ export default function BookedPage()
         }))
     },[]);
     return(
-        <div>
-            <AccountNav/>
+    <div className="w-full px-6 py-8">
+        <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+                
+                <div>
+                    <AccountNav/>
+                </div>
+            
             <div className="mt-4 space-y-4">
                 {/* When There Are No Bookings */}
                 {booking.length === 0 && (
-                        <div className="text-center mt-16">
+                        <div className="text-center mt-18">
                             <h2 className="text-2xl font-semibold">
                                 No bookings yet
                             </h2>
@@ -38,7 +44,7 @@ export default function BookedPage()
                         <div
                             key={booking._id}
                             to={`/account/booked/${booking._id}`}
-                            className="flex bg-white rounded-2xl shadow-sm hover:shadow-2xl border border-gray-400 overflow-hidden transition"
+                            className="flex bg-white rounded-2xl shadow-sm hover:shadow-2xl border border-gray-300 overflow-hidden transition"
                         >
 
                             {/* Image */}
@@ -128,8 +134,10 @@ export default function BookedPage()
                             </div>
 
                         </div>
-                    ))}
+                   ))}
+                </div>
             </div>
         </div>
+    </div>
     )
 }

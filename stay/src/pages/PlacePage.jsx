@@ -49,7 +49,7 @@ export default function PlacePage()
 
     return(
         <div>
-        <div className="mt-4  bg-gray-200 -mx-8 pt-8 px-8">
+        <div className="bg-gray-200 -mx-8 pt-8 px-8">
            <div className="px-4">
              <h1 className="text-2xl" >{place.title}</h1>
              <a className="flex mt-1 my-2 gap-1 font-semibold underline" target="_blank" href={"https://maps.google.com//?q="+place.address}>

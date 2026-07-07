@@ -3,7 +3,7 @@ import Perks from "../component/Perks";
 import { useState, useEffect } from "react";
 import AccountNav from "../component/AccountNav";
 import axios from "axios";
-import { Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 
 export default function PlacesPageFrom(){
     const {id} = useParams();
@@ -90,62 +90,191 @@ export default function PlacesPageFrom(){
     }
 
     return(
-         <div className="mt-5">
-            <AccountNav/> 
-            <form onSubmit={savePlace}>
-                {/* The Title, Address, Photos Section */}
-                {preInput('Title','Title for your place.')}
-                <input type="text" placeholder="title, for example: My Love" value={title} onChange={(e)=>{
-                    setTitle(e.target.value);
-                }}/>
-
-                {preInput('Address','Address to this place')}
-                <input type="text" placeholder="address" value={address} onChange={(e)=>{
-                    setAddress(e.target.value);}} />
-                
-                {preInput('Photos','more = better')}
-                <PhotosUploader addedPhotos={addedPhotos} onchange={setAddedPhotos}/>
-                
-                {preInput('Description','description of the places')}
-                <textarea value={description} onChange={(e)=>{
-                    setDescription(e.target.value);}} />
-                
-                {preInput('Perks','select all the perks of your places')}
-                <div className="grid mt-2 gap-2 grid-cols-2 md:grid-col-3 lg:grid-cols-6">
-                <Perks selected={perks} onChange={setPerks}/>
-                </div>
-
-                {preInput('Extra info', 'house rules, etc')}
-                <textarea value={extraInfo} onChange={(e)=>{
-                    setExtraInfo(e.target.value);}} />
-                
-                {preInput('Check in, out times & Price','add check in, out and price')}
-                <div className="grid gap-2 sm:grid-cols-4">
-                    <div>
-                        <h3 className="mt-2 -mb-1">Check in time</h3>
-                        <input type="text" placeholder="14:00" value={checkIn} onChange={(e)=>{
-                            setCheckIn(e.target.value);}}/>
-                    </div>
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header Section */}
+                <div className="mb-12">
                     
-                    <div>
-                        <h3 className="mt-2 -mb-1">Check out time</h3>
-                        <input type="text" value={checkOut} onChange={(e)=>{
-                            setCheckOut(e.target.value);}} />
-                    </div>
-                        
-                    <div>
-                        <h3 className="mt-2 -mb-1">Max number of guests</h3>
-                        <input type="number" value={maxGuests} onChange={(e)=>{
-                            setMaxGuests(e.target.value);}}/>
-                    </div>
-                    <div>
-                        <h3 className="mt-2 -mb-1">Price</h3>
-                        <input type="number" value={price} onChange={(e)=>{
-                            setprice(e.target.value);}}/>
-                    </div>
+                    <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+                        {id ? 'Update your property' : 'List your property'}
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                        {id ? 'Update your property details of your accommodation' : 'Share the details of your property to showcase it, so guests can discover and book it'}
+                    </p>
                 </div>
-                <button className="bg-amber-600 px-3 w-full py-1 rounded-2xl">Save</button>
-            </form>
+
+                <form onSubmit={savePlace} className="space-y-8">
+                    
+                    {/* Section 1: Basic Information */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <div className="flex items-center mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded bg-amber-400 font-semibold text-white text-sm mr-3">
+                                1
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">The Basics</h2>
+                        </div>
+
+                        {/* Property Name */}
+                        <div className="mb-6">
+                            {preInput('Property name', 'Give your property a memorable name..')}
+                            <input 
+                                type="text" 
+                                placeholder="e.g, Cozy Beachfront Villa" 
+                                value={title} 
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                            />
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                            {preInput('Location', 'Provide the exact location of your property')}
+                            <input 
+                                type="text" 
+                                placeholder="Street address, city, state" 
+                                value={address} 
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Section 2: Photos */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <div className="flex items-center mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded bg-amber-400 font-semibold text-white text-sm mr-3">
+                                2
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">Photos</h2>
+                        </div>
+
+                        {preInput('Upload Photos', 'Upload photos that showcase your space.')}
+                        <PhotosUploader addedPhotos={addedPhotos} onchange={setAddedPhotos}/>
+                    </div>
+
+                    {/* Section 3: Description & Details */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <div className="flex items-center mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded bg-amber-400 font-semibold text-white text-sm mr-3">
+                                3
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">About your Property</h2>
+                        </div>
+
+                        {/* Description */}
+                        <div className="mb-6">
+                            {preInput('About Place', 'Describe your property and what makes it special..')}
+                            <textarea 
+                                value={description} 
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Tell guests what makes your property unique... What's the best thing about it? What are the key features?"
+                                rows="5"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition resize-none"
+                            />
+                        </div>
+
+                        {/* Extra Info */}
+                        <div>
+                            {preInput('House Rules & Extra Info', 'Set expectations about noise, pets, parties, smoking, etc.')}
+                            <textarea 
+                                value={extraInfo} 
+                                onChange={(e) => setExtraInfo(e.target.value)}
+                                placeholder="Share important information like house rules, parking, or check-in instructions."
+                                rows="4"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition resize-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Section 4: Amenities & Perks */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <div className="flex items-center mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded bg-amber-400 font-semibold text-white text-sm mr-3">
+                                4
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">Amenities & Perks</h2>
+                        </div>
+
+                        {preInput('Select Amenities', 'Choose all the amenities your place offers')}
+                        <div className="px-4 py-4 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                            <Perks selected={perks} onChange={setPerks}/>
+                        </div>
+                    </div>
+
+                    {/* Section 5: Booking Settings */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <div className="flex items-center mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded bg-amber-400 font-semibold text-white text-sm mr-3">
+                                5
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">Booking Settings</h2>
+                        </div>
+
+                        {preInput('Check-in, Check-out & Pricing', 'Set your availability window and pricing')}
+                        
+                        <div className="m-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                            {/* Check In */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Check-in Time</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="9:00 AM" 
+                                    value={checkIn} 
+                                    onChange={(e) => setCheckIn(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                                />
+                            </div>
+                            
+                            {/* Check Out */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Check-out Time</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="11:00 PM" 
+                                    value={checkOut} 
+                                    onChange={(e) => setCheckOut(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                                />
+                            </div>
+                            
+                            {/* Max Guests */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Max Guests</label>
+                                <input 
+                                    type="number" 
+                                    value={maxGuests} 
+                                    onChange={(e) => setMaxGuests(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                                />
+                            </div>
+
+                            {/* Price */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Price per Night ₹</label>
+                                <div className="relative">
+                                    <span className="absolute right-4 top-4">₹</span>
+                                    <input 
+                                        type="number" 
+                                        value={price} 
+                                        onChange={(e) => setprice(e.target.value)}
+                                        className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex gap-3 mb-20">
+                        <button 
+                            type="submit"
+                            className="flex-1 bg-amber-700 hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
+                        >
+                            {id ? 'Save listing' : 'Create a new listing'}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }

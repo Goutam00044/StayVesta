@@ -5,74 +5,72 @@ import axios from "axios";
 import PlacesPage from "./PlacesPage";
 import AccountNav from "../component/AccountNav";
 export default function ProfilePage(){
-    const [redirect, setredirect] = useState(null);
     const {ready,user,setUser} = useContext(UserContext); 
     let {subpage} = useParams();
     if (!subpage) {
         subpage = 'profile';
     }  
-
-   async function logout(){
-        await axios.post('/logout');
-        setredirect(true);
-        setUser(null);
-    }
     if(!ready){
-            return 'Loading..';
-    }
-    
-    if (ready && !user && !redirect){
-            return <Navigate to={'/login'}/>
+                return 'Loading..';
         }
-    if(redirect){
-        return <Navigate to={'/'}/>
-    }
+
         return(
-            <div>
-                <AccountNav/>
+            <>
+        <div className="w-full px-6 py-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+                    {/* Left Sidebar */}
+                    <div>
+                    <AccountNav/>
+                    </div>
+                {/* right content */}
+                <div>
                 {subpage === 'profile' && (
-                    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
-                        <div className="max-w-md mx-auto">
-                            {/* Card */}
-                            <div className="bg-white rounded-2xl shadow-lg p-8">
-                                {/* Avatar with initials */}
-                                <div className="flex justify-center mb-6">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                                        {user.name.charAt(0).toUpperCase()}
-                                    </div>
+                    <div>
+                        <div className="bg-white border border-gray-200 rounded-2xl px-8 py-7 flex items-center gap-6 mb-6">
+                            <div className="w-19 h-19 rounded-full bg-amber-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xl font-bold text-gray-900 mb-0.5">{user.name}</p>
+                                <p className="text-sm text-gray-500">{user.email}</p>
+                            </div>
+                            {user.createdAt && (
+                                <div className="text-right">
+                                    <p className="text-xs text-gray-400">Member since</p>
+                                    <p className="text-sm font-semibold text-gray-700 mt-0.5">
+                                        {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                    </p>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* User Info */}
-                                <div className="text-center mb-8">
-                                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{user.name}</h1>
-                                    <div className="flex items-center justify-center text-gray-600 mb-4">
-                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                                        </svg>
-                                        <p className="text-sm">{user.email}</p>
-                                    </div>
-                                </div>
+                        <div className="bg-white border border-gray-200 rounded-2xl px-8 py-6">
+                            <p className="text-[15.5px] font-bold text-gray-900 mb-4">Personal information</p>
 
-                                {/* Logout Button */}
-                                <button 
-                                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 rounded-xl transition-colors duration-300"
-                                    onClick={logout}
-                                >
-                                    Logout
-                                </button>
-
-                                {/* Footer text */}
-                                <p className="text-center text-gray-500 text-sm mt-6">
-                                    Secure account managed by Airbnb
-                                </p>
+                            <div className="flex items-center justify-between py-3.5 border-b border-gray-100">
+                                <span className="text-sm text-gray-400">Full name</span>
+                                <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                            </div>
+                            <div className="flex items-center justify-between py-3.5 border-b border-gray-100">
+                                <span className="text-sm text-gray-400">Email address</span>
+                                <span className="text-sm font-medium text-gray-900">{user.email}</span>
+                            </div>
+                            <div className="flex items-center justify-between py-3.5">
+                                <span className="text-sm text-gray-400">Account status</span>
+                                <span className="text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">Verified</span>
                             </div>
                         </div>
                     </div>
                 )}
-                {subpage==='places' && (
+
+                {subpage === 'places' && (
                     <PlacesPage/>
                 )}
+                </div>
+             </div>
             </div>
+        </div>
+        </>
         )
 }

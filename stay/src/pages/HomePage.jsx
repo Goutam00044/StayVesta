@@ -27,7 +27,7 @@ export default function Homepage()
     }, [location.search]);
 
     return(
-        <div className='mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8'>
+        <div className=' p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8'>
             {places.length === 0 && (
                 <div className="col-span-full text-center py-20">
                     <h2 className="text-2xl font-semibold">
