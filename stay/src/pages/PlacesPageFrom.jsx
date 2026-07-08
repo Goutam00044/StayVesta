@@ -266,6 +266,10 @@ export default function PlacesPageFrom(){
 
                     {/* Submit Button */}
                     <div className="flex gap-3 mb-20">
+                        <button className="flex-1 bg-gray-300 hover: bg-gray-400 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
+                        >
+                            {id ? 'Cancel' : 'Back'}
+                        </button>
                         <button 
                             type="submit"
                             className="flex-1 bg-amber-700 hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"

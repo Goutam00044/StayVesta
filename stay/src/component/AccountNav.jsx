@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import axios from "axios";
 
 export default function AccountNav() {
-    const [redirect, setredirect] = useState(null);
+    const [redirect, setredirect] = useState(false);
     const {ready,user,setUser} = useContext(UserContext); 
     const {pathname} = useLocation();
     let subpage = pathname.split('/')?.[2];
@@ -34,7 +34,7 @@ export default function AccountNav() {
 
     async function logout(){
         await axios.post('/logout');
-        setredirect('/');
+        setredirect(true);
         setUser(null);
     }   
    
@@ -45,6 +45,8 @@ export default function AccountNav() {
     if (ready && !user && !redirect){
             return <Navigate to={'/login'}/>
         }
+    console.log(redirect);
+    
     if(redirect){
         return <Navigate to={'/'}/>
     }

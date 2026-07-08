@@ -5,11 +5,12 @@ import axios from "axios";
 import PlacesPage from "./PlacesPage";
 import AccountNav from "../component/AccountNav";
 export default function ProfilePage(){
-    const {ready,user,setUser} = useContext(UserContext); 
+const {ready, user, setUser} = useContext(UserContext); 
     let {subpage} = useParams();
     if (!subpage) {
         subpage = 'profile';
     }  
+    console.log(user);
     if(!ready){
                 return 'Loading..';
         }
@@ -25,7 +26,7 @@ export default function ProfilePage(){
                     </div>
                 {/* right content */}
                 <div>
-                {subpage === 'profile' && (
+                {subpage === 'profile' && !!user && (
                     <div>
                         <div className="bg-white border border-gray-200 rounded-2xl px-8 py-7 flex items-center gap-6 mb-6">
                             <div className="w-19 h-19 rounded-full bg-amber-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
