@@ -13,6 +13,7 @@ const placeSchema = new mongoose.Schema(
         checkOut: String,
         maxGuests: String,
         price:Number,
+        isListed: {type: Boolean, default: true,},
     }
 )
 

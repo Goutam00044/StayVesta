@@ -13,6 +13,25 @@ export default function PlacesPage(){
             setPlaces(response.data);
         })
     },[])
+
+    async function toggleListing(placeId) {
+    try {
+        await axios.patch(`/places/${placeId}/toggle-listing`);
+
+        setPlaces(prev =>
+            prev.map(place =>
+                place._id === placeId
+                    ? { ...place, isListed: !place.isListed }
+                    : place
+            )
+        );
+
+        setOpenMenu(null);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
     return(
     <div className="w-full px-6 py-8">
         <div className="max-w-7xl mx-auto">
@@ -52,7 +71,17 @@ export default function PlacesPage(){
                                     )}
                                 </div>
                                 <div className="flex flex-col mb-8 justify-center">
+                                    <div className="relative flex items-center justify-between">
                                     <h2 className="text-xl mb-2 font-semibold">{place.title}</h2>
+                                     <span className={`absolute right-5 top-1.5 text-xs px-3 py-1 rounded font-medium ${
+                                                place.isListed
+                                                    ? "bg-green-400 text-white"
+                                                    : "bg-amber-100 text-amber-700"
+                                            }`}
+                                        >
+                                            {place.isListed ? "Listed" : "Unlisted"}
+                                        </span>
+                                        </div>
                                     <p className="w-140 text-sm text-gray-600 mt-2 line-clamp-3">
                                         {place.description}
                                     </p>
@@ -78,9 +107,9 @@ export default function PlacesPage(){
                                         <OptionsModel
                                             place={place}
                                             onClose={() => setOpenMenu(null)}
+                                            onToggleListing={toggleListing}
                                         />
                                         </>
-                                        
                                     )}
                                 </div>
                             </div>

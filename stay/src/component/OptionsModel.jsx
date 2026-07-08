@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function OptionsModel({place, onClose})
+export default function OptionsModel({place, onClose, onToggleListing,})
 {
     return(
         <>
@@ -64,15 +64,20 @@ export default function OptionsModel({place, onClose})
             {/* Secondary Actions */}
             <div className="py-1">
                 <button
+                    onClick={() => onToggleListing(place._id)}
                     className="w-full flex items-center gap-3 px-4 py-3transition group text-left"
                 >
                     <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-lg group-hover:bg-amber-200 transition">
                         📦
                     </div>
                     <div className="flex-1">
-                        <p className="font-medium text-gray-900">Unlist Property</p>
+                        <p className="font-medium text-gray-900">
+                            {place.isListed ? "Unlist Property" : "List Property"}
+                        </p>
                         <p className="text-xs text-gray-500">
-                            Hide from guests
+                            {place.isListed
+                                ? "Hide from guests"
+                                : "Make property visible again"}
                         </p>
                     </div>
                     <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

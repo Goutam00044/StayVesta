@@ -1,18 +1,18 @@
 require('dotenv').config();
 const express = require('express');
-const cors= require('cors');
-const mongoose= require('mongoose');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const multer  = require('multer');
+const multer = require('multer');
 const imagedownloader = require('image-downloader');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const Place = require('./models/place');
 const Booking = require('./models/booking');
-const Razorpay = require("razorpay");   
+const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
 const app = express();
@@ -50,9 +50,9 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
-app.use('/uploads',express.static(src));
+app.use('/uploads', express.static(src));
 console.log(src);
-app.get("/test",(req,res)=>{
+app.get("/test", (req, res) => {
     res.json('test okay')
 })
 
@@ -65,10 +65,10 @@ if (!mongoUri) {
         .then(() => console.log('MongoDB connected successfully'))
         .catch(err => console.error('MongoDB connection error:', err.message));
 }
-app.post('/signup', async(req,res)=>{
-    const {name,email,password}=req.body;
+app.post('/signup', async (req, res) => {
+    const { name, email, password } = req.body;
 
-    try{
+    try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(422).json({ error: 'Email already exists' });
@@ -82,7 +82,7 @@ app.post('/signup', async(req,res)=>{
 
         return res.json(userdoc);
     }
-    catch(e){
+    catch (e) {
         if (e.code === 11000 && e.keyPattern?.email) {
             return res.status(422).json({ error: 'Email already exists' });
         }
@@ -90,14 +90,14 @@ app.post('/signup', async(req,res)=>{
     }
 })
 
-app.post('/login', async(req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    const userdoc = await User.findOne({email});
+    const userdoc = await User.findOne({ email });
     if (userdoc) {
-        const passok = bcrypt.compareSync(password,userdoc.password);
-        if(passok){
-            jwt.sign({email:userdoc.email,id:userdoc._id}, jwtSecret, {}, (err,token)=>{
-                if(err) throw err;
+        const passok = bcrypt.compareSync(password, userdoc.password);
+        if (passok) {
+            jwt.sign({ email: userdoc.email, id: userdoc._id }, jwtSecret, {}, (err, token) => {
+                if (err) throw err;
                 const isProduction = process.env.NODE_ENV === 'production';
                 // During local development setting SameSite=None requires Secure=true (HTTPS),
                 // which breaks localhost. Use 'lax' for dev so the browser will accept the cookie.
@@ -108,33 +108,33 @@ app.post('/login', async(req, res) => {
                 }).json(userdoc);
             })
         }
-        else{
+        else {
             res.status(422).json({ error: 'Invalid password' });
         }
     }
-    else{
+    else {
         res.status(404).json({ error: 'User not found' });
     }
 });
 
-app.get('/profile', (req,res)=>{
-    const {token}= req.cookies;
-    if(token){
-        jwt.verify(token, jwtSecret, {}, async(err, userData) => {
-            if(err){
+app.get('/profile', (req, res) => {
+    const { token } = req.cookies;
+    if (token) {
+        jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+            if (err) {
                 return res.status(401).json(null);
-            } 
-            const {name,email,_id} = await User.findById(userData.id);
-            return res.json({name,email,_id});
+            }
+            const { name, email, _id } = await User.findById(userData.id);
+            return res.json({ name, email, _id });
         });
     }
-    else{
+    else {
         return res.json(null);
     }
 });
 
-app.post('/logout',(req,res)=>{
-    res.cookie('token','').json(true);
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json(true);
 })
 
 app.post('/upload-link', async (req, res) => {
@@ -155,7 +155,7 @@ app.post('/upload-link', async (req, res) => {
 
 const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
 app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
-    const uploadedfiles =[];
+    const uploadedfiles = [];
     for (let i = 0; i < req.files.length; i++) {
         const { path: filePath, originalname } = req.files[i];
         // Extracting the 'file name' with '.extension'
@@ -173,15 +173,15 @@ app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
 })
 
 // Saving this Places data from React to MonogoDb model 
-app.post('/places',(req,res)=>{
+app.post('/places', (req, res) => {
     // We are store the places data but specific to user so using token
-    const {token}= req.cookies;
-    const {title,address,photos,description,perks,extraInfo,checkIn,checkOut,maxGuests,price} = req.body;
-    
-    jwt.verify(token,jwtSecret,{},async(err, userData)=>{
-        if(err){
+    const { token } = req.cookies;
+    const { title, address, photos, description, perks, extraInfo, checkIn, checkOut, maxGuests, price } = req.body;
+
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
             console.error(err);
-        } 
+        }
         await Place.create({
             owner: userData.id,
             title,
@@ -199,8 +199,8 @@ app.post('/places',(req,res)=>{
     res.json(true);
 })
 
-app.get('/user-places',(req,res)=>{
-    const {token} = req.cookies;
+app.get('/user-places', (req, res) => {
+    const { token } = req.cookies;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
@@ -224,28 +224,28 @@ app.get('/places/:id', async (req, res) => {
     }
 });
 
-app.put('/places',(req,res)=>{
-    const {token} = req.cookies;
+app.put('/places', (req, res) => {
+    const { token } = req.cookies;
     const {
-            id,
-            title,
-            address,
-            photos,
-            description,
-            perks,
-            extraInfo,
-            checkIn,
-            checkOut,
-            maxGuests,
-            price,
-        } = req.body;
+        id,
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+        price,
+    } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) {
             console.error(err);
             return res.status(401).json({ error: 'Invalid token' });
         }
         const placeDoc = await Place.findById(id);
-        if(userData.id=== (placeDoc.owner.toString())){
+        if (userData.id === (placeDoc.owner.toString())) {
             placeDoc.set({
                 title,
                 address,
@@ -294,8 +294,19 @@ app.get('/places', async (req, res) => {
             $gte: Number(guests),
         };
     }
+    // Places based on listing Status
+    // This means:
+    // new places (true) 
+    // old places (field missing) 
+    // unlisted (false)
+    const places = await Place.find({
+        ...filter,
+        $or: [
+            { isListed: true },
+            { isListed: { $exists: false } },
+        ],
+    });
 
-    const places = await Place.find(filter);
     const confirmedBookings = await Booking.find({
         bookingStatus: "Confirmed",
     });
@@ -304,62 +315,62 @@ app.get('/places', async (req, res) => {
 
     if (checkIn && checkOut) {
         availablePlaces = places.filter(place => {
-        const hasConflict = confirmedBookings.some(booking => {
-            return (
-                booking.place.toString() === place._id.toString() &&
-                new Date(booking.checkIn) < new Date(checkOut) &&
-                new Date(booking.checkOut) > new Date(checkIn)
-            );
+            const hasConflict = confirmedBookings.some(booking => {
+                return (
+                    booking.place.toString() === place._id.toString() &&
+                    new Date(booking.checkIn) < new Date(checkOut) &&
+                    new Date(booking.checkOut) > new Date(checkIn)
+                );
+            });
+            return !hasConflict;
         });
-        return !hasConflict;
-    });
     }
     res.json(availablePlaces);
-// This checks every place.
-// For each place it asks:
-// "Does this place have any confirmed booking that overlaps the requested dates?"
-// If yes, remove it.
-// If no, keep it.
+    // This checks every place.
+    // For each place it asks:
+    // "Does this place have any confirmed booking that overlaps the requested dates?"
+    // If yes, remove it.
+    // If no, keep it.
 });
 
-app.post('/booking',async(req,res)=>{
+app.post('/booking', async (req, res) => {
     const userData = await userDataFromReq(req);
-    
-    const { 
-            place,
-            checkIn,
-            checkOut,
-            numberGuest,
-            name,
-            phone,
-            price,
-            paymentStatus,
-            razorpayOrderId,
-            razorpayPaymentId,
-        } = req.body;
 
-    Booking.create({ 
-            place,
-            checkIn,
-            checkOut,
-            numberGuest,
-            name,
-            phone,
-            price,
-            user: userData.id,
-            paymentStatus,
-            razorpayOrderId,
-            razorpayPaymentId,
-    }).then((doc)=>{
-                res.json(doc)
-            }).catch((err)=>{
-                console.error(err);
-            })
+    const {
+        place,
+        checkIn,
+        checkOut,
+        numberGuest,
+        name,
+        phone,
+        price,
+        paymentStatus,
+        razorpayOrderId,
+        razorpayPaymentId,
+    } = req.body;
 
-    
+    Booking.create({
+        place,
+        checkIn,
+        checkOut,
+        numberGuest,
+        name,
+        phone,
+        price,
+        user: userData.id,
+        paymentStatus,
+        razorpayOrderId,
+        razorpayPaymentId,
+    }).then((doc) => {
+        res.json(doc)
+    }).catch((err) => {
+        console.error(err);
+    })
+
+
 })
 
-app.get('/bookings',async(req,res)=>{
+app.get('/bookings', async (req, res) => {
     try {
         const userData = await userDataFromReq(req);
         if (!userData?.id) {
@@ -399,16 +410,16 @@ app.post('/create-order', async (req, res) => {
     }
 });
 
-app.post('/verify-payment', async(req, res) => {
+app.post('/verify-payment', async (req, res) => {
     const {
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature
     } = req.body; //recieve these values from the frontend after payment completion 
-     const generatedSignature = crypto
+    const generatedSignature = crypto
         .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
         .update(razorpay_order_id + "|" + razorpay_payment_id).digest("hex");
-    if(generatedSignature === razorpay_signature) {
+    if (generatedSignature === razorpay_signature) {
         res.json({
             success: true
         });
@@ -471,6 +482,22 @@ app.patch('/bookings/:id/cancel', async (req, res) => {
     }
 });
 
+//Create Toggle Listing API
+app.patch('/places/:id/toggle-listing', async (req, res) => { 
+    try { const userData = await userDataFromReq(req); 
+        const { id } = req.params; 
+        const place = await Place.findOne({ _id: id, owner: userData.id, }); 
+        if (!place) {
+             return res.status(404).json({ error: "Place not found" });
+             } 
+        place.isListed = !place.isListed;
+        await place.save(); res.json(place); 
+    } 
+    catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+}
+});
 
 app.listen(4000, () => {
     console.log('Server Started on port no 4000');
