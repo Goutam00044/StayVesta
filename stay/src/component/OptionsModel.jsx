@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function OptionsModel({place, onClose, onToggleListing,})
+export default function OptionsModel({place, onClose, onToggleListing, onDelete})
 {
     return(
         <>
@@ -15,7 +15,7 @@ export default function OptionsModel({place, onClose, onToggleListing,})
             <div className="py-1">
                 <Link
                     to={`/places/${place._id}`}
-                    className="flex items-center gap-3 px-4 py-3 transition group"
+                    className="flex items-center hover:bg-gray-200 gap-3 px-4 py-3 transition group"
                     onClick={onClose}
                 >
                     <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-lg group-hover:bg-blue-200 transition">
@@ -36,7 +36,7 @@ export default function OptionsModel({place, onClose, onToggleListing,})
                 
                 <Link
                     to={`/account/places/${place._id}`}
-                    className="flex items-center gap-3 px-4 py-3 transition group"
+                    className="flex items-center gap-3 hover:bg-gray-200 px-4 py-3 transition group"
                     onClick={onClose}
                 >
                     <div className="w-10 h-10 rounded-lg bg-green-100  flex items-center justify-center group-hover:bg-green-200 transition">
@@ -65,7 +65,7 @@ export default function OptionsModel({place, onClose, onToggleListing,})
             <div className="py-1">
                 <button
                     onClick={() => onToggleListing(place._id)}
-                    className="w-full flex items-center gap-3 px-4 py-3transition group text-left"
+                    className="w-full flex items-center hover:bg-gray-200 gap-3 px-4 py-3 transition group text-left"
                 >
                     <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-lg group-hover:bg-amber-200 transition">
                         📦
@@ -91,8 +91,11 @@ export default function OptionsModel({place, onClose, onToggleListing,})
  
             {/* Danger Action */}
             <div className="py-1">
-                <button
-                    className="w-full flex items-center gap-3 px-4 py-3 transition group text-left"
+                <button onClick={()=>{
+                                    onDelete(place);
+                                    onClose();
+                            }}
+                    className="w-full flex items-center hover:bg-gray-200 gap-3 px-4 py-3 transition group text-left"
                 >
                     <div className="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center text-lg group-hover:bg-red-200 transition">
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="80" height="80" viewBox="0 0 30 30">

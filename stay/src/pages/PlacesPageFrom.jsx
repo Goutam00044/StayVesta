@@ -3,7 +3,7 @@ import Perks from "../component/Perks";
 import { useState, useEffect } from "react";
 import AccountNav from "../component/AccountNav";
 import axios from "axios";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useNavigate } from "react-router-dom";
 
 export default function PlacesPageFrom(){
     const {id} = useParams();
@@ -18,6 +18,7 @@ export default function PlacesPageFrom(){
     const [maxGuests,setMaxGuests] = useState(1);
     const [price, setprice] = useState(0)
     const [redirect, setredirect] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
       if(!id){
@@ -260,13 +261,13 @@ export default function PlacesPageFrom(){
                                         className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
                                     />
                                 </div>
-                            </div>
+                            </div> 
                         </div>
                     </div>
 
                     {/* Submit Button */}
                     <div className="flex gap-3 mb-20">
-                        <button className="flex-1 bg-gray-300 hover: bg-gray-400 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
+                        <button type="button" onClick={() => navigate("/account/places")} className="flex-1 bg-gray-300 hover:bg-gray-400 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
                         >
                             {id ? 'Cancel' : 'Back'}
                         </button>

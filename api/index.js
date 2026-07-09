@@ -263,6 +263,52 @@ app.put('/places', (req, res) => {
         res.json('ok');
     });
 })
+
+// Delete Property Safely with proper authentication 
+app.delete('/places/:id', async (req, res) => {
+    try {
+        const userData = await userDataFromReq(req);
+        const { id } = req.params;
+
+        // Verify ownership
+        const place = await Place.findOne({
+            _id: id,
+            owner: userData.id,
+        });
+
+        if (!place) {
+            return res.status(404).json({
+                error: "Place not found",
+            });
+        }
+
+        // Check for confirmed bookings
+        const confirmedBooking = await Booking.findOne({
+            place: id,
+            bookingStatus: "Confirmed",
+        });
+
+        if (confirmedBooking) {
+            return res.status(400).json({
+                error: "This property has confirmed bookings and cannot be deleted.",
+            });
+        }
+
+        await Place.findByIdAndDelete(id);
+
+        res.json({
+            success: true,
+            message: "Property deleted successfully.",
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: "Failed to delete property.",
+        });
+    }
+});
+
 // Get Places Data & Also Search Support from MongoDB
 app.get('/places', async (req, res) => {
 

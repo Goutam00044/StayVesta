@@ -3,8 +3,11 @@ import AccountNav from "../component/AccountNav";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import OptionsModel from "../component/OptionsModel";
+import DeletePlaceModal from "../component/DeletePlaceModal";
 
 export default function PlacesPage(){
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedPlace, setSelectedPlace] = useState(null);
     const [places, setPlaces] = useState([]);
     const [OpenMenu, setOpenMenu] = useState(null);
     useEffect(()=>{
@@ -13,7 +16,7 @@ export default function PlacesPage(){
             setPlaces(response.data);
         })
     },[])
-
+    console.log(showDeleteModal);
     async function toggleListing(placeId) {
     try {
         await axios.patch(`/places/${placeId}/toggle-listing`);
@@ -30,8 +33,27 @@ export default function PlacesPage(){
     } catch (err) {
         console.error(err);
     }
-}
+    }
+    //Delete the property on confirm delete by owner
+    async function deletePlace() {
+    try {
+        await axios.delete(`/places/${selectedPlace._id}`);
+        // Remove the deleted place from the UI
+        setPlaces(prev =>
+            prev.filter(place => place._id !== selectedPlace._id)
+        );
 
+        // Close modal
+        setShowDeleteModal(false);
+        setSelectedPlace(null);
+
+    } catch (err) {
+        alert(
+            err.response?.data?.error ||
+            "Failed to delete property."
+        );
+    }
+}
     return(
     <div className="w-full px-6 py-8">
         <div className="max-w-7xl mx-auto">
@@ -108,8 +130,22 @@ export default function PlacesPage(){
                                             place={place}
                                             onClose={() => setOpenMenu(null)}
                                             onToggleListing={toggleListing}
+                                            onDelete ={(place)=>{
+                                                setSelectedPlace(place);
+                                                setShowDeleteModal(true);
+                                            }}
                                         />
                                         </>
+                                    )}
+                                    {showDeleteModal && selectedPlace && (
+                                        <DeletePlaceModal
+                                            place={selectedPlace}
+                                            onClose={() => {
+                                                setShowDeleteModal(false);
+                                                setSelectedPlace(null);
+                                            }}
+                                            onConfirm={deletePlace}
+                                        />
                                     )}
                                 </div>
                             </div>

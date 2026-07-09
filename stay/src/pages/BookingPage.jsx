@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { differenceInCalendarDays, format } from "date-fns";
@@ -12,7 +12,7 @@ export default function BookingPage() {
 
     const { pendingBooking, setPendingBooking } = useContext(UserContext);
 
-    useEffect(() => {
+    useEffect(() => { 
         if (pendingBooking) {
             setbookinfo(pendingBooking);
         }
@@ -103,14 +103,15 @@ export default function BookingPage() {
     }
 
     return (
-        <>
-            <div className="mt-4">
-                <a
-                    href="/account/booking"
-                    className="inline-flex items-center gap-1.5 text-sm text-black hover:text-gray-800 mb-7"
+        <div className="px-4 mb-16">
+            <div>
+                <Link
+                    to={"/"}    
+                    className="inline-block self-start group mb-4"
                 >
-                    ← Back to bookings
-                </a>
+                    <div className="mt-1 font-semibold">Back</div>
+                    <div className="border-t-[1.5px] w-9 group-hover:opacity-0 transition-opacity duration-500"></div>
+                </Link>
                 <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                     Review your booking
                 </h1>
@@ -119,9 +120,9 @@ export default function BookingPage() {
                 </p>
             </div>
 
-            <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-200 bg-white">
+            <div className="flex flex-col md:flex-row rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-300 bg-white">
                 {/* Left */}
-                <div className="md:w-5/12 relative min-h-64">
+                <div className="md:w-5/12 relative min-h-65 ">
                     <img
                         src={
                             "http://localhost:4000/uploads/" +
@@ -216,6 +217,6 @@ export default function BookingPage() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
