@@ -20,6 +20,7 @@
 
 import { useState } from "react";
 import { differenceInCalendarDays } from "date-fns";
+import toast from "react-hot-toast";
 
 export default function ConfirmBookingModal({ checkIn, checkOut, onClose, onConfirm }) {
   const [localIn,  setLocalIn]  = useState(checkIn);
@@ -32,11 +33,11 @@ export default function ConfirmBookingModal({ checkIn, checkOut, onClose, onConf
 
   function handleConfirm() {
     if (!localIn || !localOut) {
-      alert("Please select both check-in and check-out dates.");
+      toast.success("Please select both check-in and check-out dates.");
       return;
     }
     if (nights <= 0) {
-      alert("Check-out must be after check-in.");
+      toast.success("Check-out must be after check-in.");
       return;
     }
     onConfirm(localIn, localOut);

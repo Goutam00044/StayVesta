@@ -4,6 +4,7 @@ import axios from "axios";
 import { differenceInCalendarDays, format } from "date-fns";
 import CancelBookingModel from "../component/CancelBookingModal";
 import RefundStatusModal from "../component/RefundStatusModal";
+import toast from "react-hot-toast";
 
 export default function BookedDetailsPage() {
 
@@ -29,11 +30,16 @@ export default function BookedDetailsPage() {
             const { data } = await axios.patch(
                 `/bookings/${bookinfo._id}/cancel`
             );
+
             setBookinfo(data);
+            toast.success("Booking cancelled successfully.");
             setShowCancelModal(false);
         } catch (err) {
             console.error(err);
-            alert("Failed to cancel booking.");
+                toast.error(
+                err.response?.data?.error ||
+                "Failed to cancel booking."
+            );
         }
     }
     console.log(showCancelModal);
