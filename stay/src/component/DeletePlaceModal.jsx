@@ -4,7 +4,7 @@ export default function DeletePlaceModal({
     onConfirm,
 }) {
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+        <div className="fixed z-10 bg-black/5 min-h-screen w-screen flex justify-center items-center top-0 left-0">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
 
                 <h2 className="text-xl font-semibold text-red-600">

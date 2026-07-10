@@ -2,7 +2,7 @@ import { differenceInCalendarDays } from "date-fns";
 export default function CancelBookingModel({booking, onClose, onConfirm}){
 
     return(
-    <div className="fixed z-10 bg-black/50 min-h-screen w-screen flex justify-center items-center top-0 left-0">
+    <div className="fixed z-10 bg-black/5 min-h-screen w-screen flex justify-center items-center top-0 left-0">
       <div className="bg-white rounded-2xl shadow-xl p-6 relative w-full max-w-sm mx-4">
 
         {/* Close button */}

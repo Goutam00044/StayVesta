@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AccountNav from "../component/AccountNav";
 import axios from "axios";
 import { Link, Navigate, useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function PlacesPageFrom(){
     const {id} = useParams();
@@ -83,6 +84,11 @@ export default function PlacesPageFrom(){
         await axios.post('/places',placeData);
             
         }
+        toast.success(
+        id
+        ? "Property updated successfully!"
+        : "Property added successfully!"
+        );
         setredirect(true);
     }
 

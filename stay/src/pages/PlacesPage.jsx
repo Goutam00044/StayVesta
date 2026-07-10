@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import OptionsModel from "../component/OptionsModel";
 import DeletePlaceModal from "../component/DeletePlaceModal";
+import toast from "react-hot-toast";
 
 export default function PlacesPage(){
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -19,8 +20,11 @@ export default function PlacesPage(){
     console.log(showDeleteModal);
     async function toggleListing(placeId) {
     try {
+        // These are for Toast response based on listed or unlisted
+        const currentPlace = places.find(place => place._id === placeId);
+        const willBeListed = !currentPlace.isListed;
+        //API calling to Toggle
         await axios.patch(`/places/${placeId}/toggle-listing`);
-
         setPlaces(prev =>
             prev.map(place =>
                 place._id === placeId
@@ -28,8 +32,12 @@ export default function PlacesPage(){
                     : place
             )
         );
-
         setOpenMenu(null);
+        toast.success(
+            willBeListed
+            ? "Property listed successfully!"
+            : "Property unlisted successfully!"
+        );
     } catch (err) {
         console.error(err);
     }
@@ -42,16 +50,16 @@ export default function PlacesPage(){
         setPlaces(prev =>
             prev.filter(place => place._id !== selectedPlace._id)
         );
-
+        toast.success("Property deleted successfully!");
         // Close modal
         setShowDeleteModal(false);
         setSelectedPlace(null);
-
+        
     } catch (err) {
-        alert(
-            err.response?.data?.error ||
-            "Failed to delete property."
-        );
+        toast.error(
+                err.response?.data?.error ||
+                "Failed to delete property."
+            );
     }
 }
     return(
@@ -97,8 +105,15 @@ export default function PlacesPage(){
                                 <div className="flex flex-col mb-8 justify-center">
                                     <div className="relative flex items-center justify-between">
                                     <h2 className="text-xl mb-2 font-semibold">{place.title}</h2>
-                                     <span
-                                        className={`absolute right-5 top-1.5 min-w-[90px] px-4 py-2 rounded-2xl border border-gray-300 text-xs font-medium flex items-center justify-center gap-1
+                                     
+                                    </div>
+                                    <p className="w-140 text-sm text-gray-600 mt-2 line-clamp-3">
+                                        {place.description}
+                                    </p>
+                                </div>
+                                <div className="absolute right-16 top-3.5">
+                                <span 
+                                    className={`min-w-[90px] px-4 py-2 rounded-2xl border border-gray-300 text-xs font-medium flex items-center justify-center gap-1
                                             ${
                                             place.isListed
                                                 ? "bg-lime-50 text-gray-800"
@@ -106,13 +121,9 @@ export default function PlacesPage(){
                                             }`}
                                         >
                                         {place.isListed ? "🟢 Active" : "🟠 Inactive"}
-                                        </span>
-                                        </div>
-                                    <p className="w-140 text-sm text-gray-600 mt-2 line-clamp-3">
-                                        {place.description}
-                                    </p>
+                                </span>
                                 </div>
-                                <div className="absolute top-4 right-4">
+                                <div className="absolute top-3 right-4">
                                     <button
                                         onClick={() =>
                                             setOpenMenu(OpenMenu === place._id ? null : place._id)
