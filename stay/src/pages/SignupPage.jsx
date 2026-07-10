@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from 'axios';
+import toast from "react-hot-toast";
 
 export default function SignupPage()
 {   
@@ -8,19 +9,32 @@ export default function SignupPage()
     const [lname, setlname] = useState('');
     const [email, setemail] = useState('');
     const [password, setpassword] = useState(''); 
+    const [redirect, setredirect]= useState(false);
+    const registerUser = async (ev) => {
+    ev.preventDefault();
 
-    const registerUser= async(ev)=>{
-        ev.preventDefault();
-        try{
-            await axios.post('/signup',{
-            name,email,password,
+    try {
+        await axios.post('/signup', {
+            fname,
+            lname,
+            email,
+            password,
         });
-        alert('Registration Successful. Now You can Login')
-        } 
-        catch(e){
-            console.error(e);
-            alert('Registration Failed Try Later')
-        }
+
+        toast.success("Account created successfully!");
+        setredirect(true);
+    } catch (err) {
+        console.error(err);
+
+        toast.error(
+            err.response?.data?.error ||
+            "Registration failed. Please try again."
+        );
+    }
+};
+    if(redirect)
+    {
+        return <Navigate to="/login"/>
     }
     return(
             <div className="mt-4 grow flex items-center justify-around">

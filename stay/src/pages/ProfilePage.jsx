@@ -30,11 +30,11 @@ const {ready, user, setUser} = useContext(UserContext);
                     <div>
                         <div className="bg-white border border-gray-200 rounded-2xl px-8 py-7 flex items-center gap-6 mb-6">
                             <div className="w-19 h-19 rounded-full bg-amber-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
-                                {user.name.charAt(0).toUpperCase()}
+                                {user.fname.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1">
-                                <p className="text-xl font-bold text-gray-900 mb-0.5">{user.name}</p>
-                                <p className="text-sm text-gray-500">{user.email}</p>
+                                <p className="text-xl font-bold text-gray-900 mb-0.5">{user.fname} {user.lname}</p>
+                                <p className="text-sm text-gray-900">{user.email}</p>
                             </div>
                             {user.createdAt && (
                                 <div className="text-right">
@@ -50,15 +50,15 @@ const {ready, user, setUser} = useContext(UserContext);
                             <p className="text-[15.5px] font-bold text-gray-900 mb-4">Personal information</p>
 
                             <div className="flex items-center justify-between py-3.5 border-b border-gray-100">
-                                <span className="text-sm text-gray-400">Full name</span>
-                                <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                                <span className="text-sm text-gray-800">Full name</span>
+                                <span className="text-sm font-medium text-gray-900">{user.fname} {user.lname}</span>
                             </div>
                             <div className="flex items-center justify-between py-3.5 border-b border-gray-100">
-                                <span className="text-sm text-gray-400">Email address</span>
+                                <span className="text-sm text-gray-800">Email address</span>
                                 <span className="text-sm font-medium text-gray-900">{user.email}</span>
                             </div>
                             <div className="flex items-center justify-between py-3.5">
-                                <span className="text-sm text-gray-400">Account status</span>
+                                <span className="text-sm text-gray-800">Account status</span>
                                 <span className="text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">Verified</span>
                             </div>
                         </div>

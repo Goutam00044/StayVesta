@@ -19,10 +19,35 @@ import PlacePage from './pages/PlacePage.jsx';
 import BookedPage from './pages/BookedPage.jsx';
 import BookingPage from './pages/BookingPage.jsx';
 import BookedDetailsPage from './pages/BookedDetailsPage.jsx';
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <UserContextProvider>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            borderRadius: "12px",
+            background: "#fff",
+            color: "#111827",
+          },
+          success: {
+            iconTheme: {
+              primary: "#16a34a",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#dc2626",
+              secondary: "#fff",
+            },
+          },
+        }}
+      />
         <Routes>
           <Route path='/' element={<Layout/>}>
             <Route path='/' element={<Homepage/>}/>

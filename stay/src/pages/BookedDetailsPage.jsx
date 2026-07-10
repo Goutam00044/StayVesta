@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { differenceInCalendarDays, format } from "date-fns";
@@ -38,7 +38,7 @@ export default function BookedDetailsPage() {
     }
     console.log(showCancelModal);
     return (
-        <>
+        <div className="px-4 mb-12">
             {showCancelModal && (
                 <CancelBookingModel
                     booking={bookinfo}
@@ -52,13 +52,13 @@ export default function BookedDetailsPage() {
                     onClose={() => setShowRefundModal(false)}
                 />
             )}
-            <div className="mt-4">
-                <a
-                    href="/account/booked"
-                    className="inline-flex items-center gap-1.5 text-sm text-black hover:text-gray-800 mb-7"
+            <div className="mt-4 ">
+                <Link to={"/account/booked"}
+                    className="inline-block self-start group mb-4"
                 >
-                    ← Back to booked
-                </a>
+                    <div className="mt-1 font-semibold">Back</div>
+                    <div className="border-t-[1.5px] w-9 group-hover:opacity-0 transition-opacity duration-500"></div>
+                </Link>
                 <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                     Booking Details
                 </h1>
@@ -237,6 +237,6 @@ export default function BookedDetailsPage() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

@@ -19,7 +19,7 @@ export default function Header() {
           {!!user &&(
             <Link to={'/account'}>
               <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white text-xl flex-shrink-0">
-                  {user.name.charAt(0).toUpperCase()}
+                  {user.fname.charAt(0).toUpperCase()}
               </div>
             </Link>
           )}

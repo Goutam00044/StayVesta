@@ -2,43 +2,43 @@ import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import axios from 'axios';
 import { UserContext } from "../UserContext";
+import toast from "react-hot-toast";
 
 export default function LoginPage(){
     const [email, setemail] = useState('');
     const [password, setpassword] = useState('');
     const [redirect, setredirect] = useState(false);
     const {setUser} = useContext(UserContext);
-    
+
+    async function handleloginSubmit(e) {
+    e.preventDefault();
+
+    try {
+        await axios.post(
+            "/login",
+            { email, password },
+            { withCredentials: true }
+        );
+
+        const { data: profile } = await axios.get("/profile");
+
+        setUser(profile);
+
+        toast.success(`Welcome back, ${profile.name}!`);
+
+        setredirect(true);
+
+    } catch (err) {
+        console.error(err);
+
+        toast.error(
+            err.response?.data?.error ||
+            "Login failed."
+        );
+    }
+  }
     if (redirect) {
         return <Navigate to={'/'} />
-    }
-    
-    async function handleloginSubmit(e){
-        e.preventDefault();
-        try {
-            const { data } = await axios.post('/login', { email, password }, {
-                withCredentials: true,
-            });
-            console.log('Login response data:', data);
-            if (data?.error) {
-                alert(data.error);
-                return;
-            }
-            // After login, fetch the canonical profile (ensures cookie/session applied)
-            try {
-                const { data: profile } = await axios.get('/profile');
-                console.log('Profile after login:', profile);
-                setUser(profile);
-            } catch (err) {
-                console.error('Failed to fetch profile after login', err);
-            }
-            alert('Login Successful');
-            setredirect(true);
-        }
-        catch(err){
-            console.error(err);
-            alert('Login Failed');
-        }
     }
     return(
         <>
@@ -74,8 +74,7 @@ export default function LoginPage(){
                         <div className="border-t w-60 mx-auto mt-0.5 group-hover:opacity-0 transition-opacity duration-300"></div>
                     </Link>
                 </form>
-                </div>
-               
+                </div>               
             </div>
         </>
     )

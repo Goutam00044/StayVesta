@@ -66,7 +66,7 @@ if (!mongoUri) {
         .catch(err => console.error('MongoDB connection error:', err.message));
 }
 app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { fname, lname, email, password } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -75,7 +75,8 @@ app.post('/signup', async (req, res) => {
         }
 
         const userdoc = await User.create({
-            name,
+            fname,
+            lname,
             email,
             password: bcrypt.hashSync(password, bcryptSalt),
         });
@@ -124,8 +125,8 @@ app.get('/profile', (req, res) => {
             if (err) {
                 return res.status(401).json(null);
             }
-            const { name, email, _id } = await User.findById(userData.id);
-            return res.json({ name, email, _id });
+            const { fname, lname, email, _id } = await User.findById(userData.id);
+            return res.json({fname, lname, email, _id });
         });
     }
     else {
