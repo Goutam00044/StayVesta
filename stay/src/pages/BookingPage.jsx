@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { differenceInCalendarDays, format } from "date-fns";
 import { UserContext } from "../UserContext.jsx";
+import toast from "react-hot-toast";
 
 export default function BookingPage() {
 
@@ -18,21 +19,22 @@ export default function BookingPage() {
         }
     }, [pendingBooking]);
     // Never Used function, but it been used before to create booking without payment gateway
-    async function book(){
-        if (!pendingBooking) return;
-        const response = await axios.post('/booking', {
-            place: pendingBooking.place._id,
-            checkIn: pendingBooking.checkIn,
-            checkOut: pendingBooking.checkOut,
-            numberGuest: pendingBooking.numberGuest,
-            name: pendingBooking.name,
-            phone: pendingBooking.phone,
-            price: pendingBooking.price,
-        });
-        return response.data;
-    }
+    // async function book(){
+    //     if (!pendingBooking) return;
+    //     const response = await axios.post('/booking', {
+    //         place: pendingBooking.place._id,
+    //         checkIn: pendingBooking.checkIn,
+    //         checkOut: pendingBooking.checkOut,
+    //         numberGuest: pendingBooking.numberGuest,
+    //         name: pendingBooking.name,
+    //         phone: pendingBooking.phone,
+    //         price: pendingBooking.price,
+    //     });
+    //     return response.data;
+    // }
 
    async function handlePayClick() {
+    const loadingToast = toast.loading("Processing payment...");
     if (!pendingBooking) return;
     setIsLoading(true);
     try {
@@ -72,11 +74,14 @@ export default function BookingPage() {
                     razorpayOrderId:response.razorpay_order_id,
                     razorpayPaymentId:response.razorpay_payment_id,
                 });
+                toast.dismiss(loadingToast);
+                toast.success("Booking confirmed successfully!");
                 setPendingBooking(null);
                 setredirect("/account/booked");
             } 
             else{
-                  alert("Payment verification failed.");  
+                  toast.dismiss(loadingToast);
+                  toast.error("Payment verification failed.");
             }
         },
     }
@@ -85,6 +90,11 @@ export default function BookingPage() {
         } 
         catch (err) {
         console.log(err);
+            toast.dismiss(loadingToast);
+            toast.error(
+            err.response?.data?.error ||
+            "Payment failed. Please try again."
+            );
     } finally {
         setIsLoading(false);
     }
