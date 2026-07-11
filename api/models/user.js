@@ -4,8 +4,20 @@ const UserSchema= mongoose.Schema(
     {
         fname: String,
         lname:String,
-        email:{type:String, required: true, unique:true},
+        email:{
+            type:String, 
+            required: true, 
+            unique:true
+        },
         password: String,
+        isHost:{
+            type:Boolean,
+            default:false,
+        }
+    },
+    //added this to know user from when he is hosting (Useful for analytics) 
+    {
+    timestamps:true
     }
 );
 

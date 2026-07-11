@@ -65,9 +65,9 @@ const {ready, user, setUser} = useContext(UserContext);
                     </div>
                 )}
 
-                {subpage === 'places' && (
+                {/* {subpage === 'places' && (
                     <PlacesPage/>
-                )}
+                )} */}
                 </div>
              </div>
             </div>

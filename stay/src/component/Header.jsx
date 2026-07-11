@@ -3,10 +3,24 @@ import { UserContext } from "../UserContext";
 import { useContext, useState, useEffect } from "react";
 import { format, addDays } from 'date-fns';
 import SearchModel from "./SearchModel";
+import axios from "axios";
 
 export default function Header() {
-    const {user}= useContext(UserContext);
-
+    const {user, setUser}= useContext(UserContext);
+    const navigate = useNavigate();
+    async function handleBecomeHost(){
+      try{
+        const {data} = await axios.patch("/user/become-host",{},{
+                withCredentials:true
+            });
+            console.log(data.data);
+            setUser(data.user);
+            navigate("/hosting");
+      }
+      catch(error){
+        console.log(error.response?.data || error.message);
+      }
+    }
     return(
         <>
         <header className="p-4 flex items-center justify-between">
@@ -30,7 +44,15 @@ export default function Header() {
             </>   
           )}
           
-          <button className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl'>Become a host</button>
+          {user?.isHost ? (
+                <button className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl'>
+                    Switch to travelling
+                </button>
+            ) : (
+                <button onClick={handleBecomeHost} className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl' >
+                    Become a Host
+                </button>
+            )}
         </div>
       </header>
 

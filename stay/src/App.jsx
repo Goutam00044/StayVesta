@@ -20,6 +20,8 @@ import BookedPage from './pages/BookedPage.jsx';
 import BookingPage from './pages/BookingPage.jsx';
 import BookedDetailsPage from './pages/BookedDetailsPage.jsx';
 import { Toaster } from "react-hot-toast";
+import HostPage from './pages/HostPage.jsx';
+import HostRoute from './component/HostRoute.jsx';
 
 function App() {
   return (
@@ -55,13 +57,18 @@ function App() {
             <Route path='/signup' element={<SignupPage/>}/>
             <Route path='/account/' element={<ProfilePage/>}/>
             <Route path='/account/:subpage' element={<ProfilePage/>}/>
-            <Route path='/account/places' element={<PlacesPage/>}/>
-            <Route path='/account/places/new' element={<PlacesPageFrom/>}/>
-            <Route path='/account/places/:id' element={<PlacesPageFrom/>}/>
+            <Route path='/hosting/listings' element={<PlacesPage/>}/>
+            <Route path='/hosting/listings/new' element={<PlacesPageFrom/>}/>
+            <Route path='/hosting/listings/:id' element={<PlacesPageFrom/>}/>
             <Route path='/places/:id' element={<PlacePage/>}/>
             <Route path='/account/booked' element={<BookedPage/>}/>
             <Route path='/account/booked/:id' element={<BookedDetailsPage/>}/>
             <Route path='/account/booking/:id' element={<BookingPage/>}/>
+            <Route path='/hosting' element={
+              <HostRoute>
+                <HostPage/>
+              </HostRoute>
+            }/>
           </Route>
         </Routes>
     </UserContextProvider>

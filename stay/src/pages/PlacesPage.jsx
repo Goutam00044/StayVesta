@@ -66,25 +66,27 @@ export default function PlacesPage(){
 }
     return(
     <div className="w-full px-6 py-8">
-        <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
-                <div>
-                    <AccountNav/>
-                </div>
-            <div className="mb-3">
-                <div className="flex items-center justify-between mt-3 mb-3">
-                    <h1 className="text-3xl font-semibold">
-                        My Listing
-                    </h1>
-                    <Link className='bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-full font-semibold transition inline-flex gap-1' to={'/account/places/new'}> 
-                    {/* Plus Icon */}
+                    {/* <div className="mt-3 mb-6 mx-18">
+                    <Link className='bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-full font-semibold transition inline-flex gap-1' 
+                           to={'/hosting/listings/new'}> 
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                     Add Places
-                </Link>
-                </div>
+                    </Link>
+                </div> */}
+        <div className="max-w-4xl mx-auto">            
+            {/* <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+                <div>
+                    <AccountNav/>
+                </div> */}
+            <div className="mb-8">
              <div className="flex flex-col gap-3">
+                <div className="mt-4 mb-4">
+                    <h1 className="text-3xl font-semibold">
+                        My Listing
+                </h1>
+                </div>
                 {places.length > 0 && places.map((place) => {
                     const firstPhoto = place.photos?.[0] || place.addedPhotos?.[0];
                     return (
@@ -185,7 +187,7 @@ export default function PlacesPage(){
                 </div>
             </div>
             </div>
-        </div>
+        {/* </div> */}
     </div>
     )   
 }

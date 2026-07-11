@@ -134,6 +134,55 @@ app.get('/profile', (req, res) => {
     }
 });
 
+// Added here Become a host Feature 
+//Route for Host here
+app.patch('/user/become-host', async (req, res) => {
+    try {
+
+        const { token } = req.cookies;
+
+        if (!token) {
+            return res.status(401).json({
+                error: "Not authenticated"
+            });
+        }
+
+        jwt.verify(token, jwtSecret, async (err, userData) => {
+
+            if (err) {
+                return res.status(401).json({
+                    error: "Invalid token"
+                });
+            }
+
+            const user = await User.findById(userData.id);
+
+            if (!user) {
+                return res.status(404).json({
+                    error: "User not found"
+                });
+            }
+
+
+            user.isHost = true;
+
+            await user.save();
+
+
+            res.json({
+                message: "You are now a host",
+                user
+            });
+
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 })
