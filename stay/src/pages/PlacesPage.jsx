@@ -5,12 +5,14 @@ import axios from "axios";
 import OptionsModel from "../component/OptionsModel";
 import DeletePlaceModal from "../component/DeletePlaceModal";
 import toast from "react-hot-toast";
+import ConfirmAction from "../component/ConfirmAction";
 
 export default function PlacesPage(){
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [places, setPlaces] = useState([]);
     const [OpenMenu, setOpenMenu] = useState(null);
+    const [confirmAction, setConfirmAction] = useState(null);
     useEffect(()=>{
         axios.get('/user-places').then((response)=>{
             console.log(response.data);
@@ -144,13 +146,27 @@ export default function PlacesPage(){
                                         <OptionsModel
                                             place={place}
                                             onClose={() => setOpenMenu(null)}
-                                            onToggleListing={toggleListing}
+                                            onToggleListing={()=>{
+                                                setConfirmAction(place);
+                                                setOpenMenu(null);
+                                            }   
+                                            }
                                             onDelete ={(place)=>{
                                                 setSelectedPlace(place);
                                                 setShowDeleteModal(true);
                                             }}
                                         />
                                         </>
+                                    )}
+                                    {confirmAction && (
+                                        <ConfirmAction
+                                            place={confirmAction}
+                                            onCancel={() => setConfirmAction(null)}
+                                            onConfirm={()=>{
+                                                toggleListing(confirmAction._id)
+                                                setConfirmAction(null);
+                                            }}
+                                        />
                                     )}
                                     {showDeleteModal && selectedPlace && (
                                         <DeletePlaceModal

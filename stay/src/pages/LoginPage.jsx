@@ -24,7 +24,7 @@ export default function LoginPage(){
 
         setUser(profile);
 
-        toast.success(`Welcome back, ${profile.name}!`);
+        toast.success(`Welcome back, ${profile.fname}`);
 
         setredirect(true);
 
