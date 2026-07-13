@@ -93,7 +93,7 @@ export default function PlacesPageFrom(){
     }
 
     if(redirect){
-        return <Navigate to={'/hosting/listings'}/>
+        return <Navigate to={'/hosting/'}/>
     }
 
     return(

@@ -13,6 +13,9 @@ export default function PlacesPage(){
     const [places, setPlaces] = useState([]);
     const [OpenMenu, setOpenMenu] = useState(null);
     const [confirmAction, setConfirmAction] = useState(null);
+    const activeListings = places.filter(place => place.isListed).length;
+    const inactiveListings = places.filter(place => !place.isListed).length;
+    const totalListings = places.length;
     useEffect(()=>{
         axios.get('/user-places').then((response)=>{
             console.log(response.data);
@@ -82,11 +85,50 @@ export default function PlacesPage(){
                 </div> */}
             <div className="mb-8">
              <div className="flex flex-col gap-3">
-                <div className="mt-4 mb-4">
+                <div className="mt-4">
                     <h1 className="text-3xl font-semibold">
                         My Listing
-                </h1>
+                    </h1>
+                    <p className="text-gray-500 text-md">
+                        Manage all your accommodations.
+                    </p>
+
+                    <Link
+                        className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-full font-semibold transition inline-flex gap-2"
+                        to="/hosting/listings/new">
+                        +
+                        Add Listing
+                    </Link>
                 </div>
+                <div className="mt-8 border rounded-2xl px-8 py-5 bg-white">
+                <div className="flex justify-center gap-12">
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500">
+                            Active
+                        </p>
+                        <p className="text-2xl font-bold text-green-600">
+                            {activeListings}
+                        </p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500">
+                            Inactive
+                        </p>
+                        <p className="text-2xl font-bold text-orange-600">
+                            {inactiveListings}
+                        </p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500">
+                            Total Listings
+                        </p>
+                        <p className="text-2xl font-bold">
+                            {totalListings}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
                 {places.length > 0 && places.map((place) => {
                     const firstPhoto = place.photos?.[0] || place.addedPhotos?.[0];
                     return (
