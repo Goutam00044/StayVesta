@@ -86,44 +86,50 @@ export default function PlacesPage(){
             <div className="mb-8">
              <div className="flex flex-col gap-3">
                 <div className="mt-4">
-                    <h1 className="text-3xl font-semibold">
+                    {/* Header */}
+                   <div className="flex items-center justify-between">
+                     <div>
+                        <h1 className="text-3xl font-semibold">
                         My Listing
-                    </h1>
-                    <p className="text-gray-500 text-md">
-                        Manage all your accommodations.
-                    </p>
+                        </h1>
+                        <p className="text-gray-500 text-md">
+                            Manage all your accommodations.
+                        </p>
+                     </div>
 
                     <Link
-                        className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-full font-semibold transition inline-flex gap-2"
+                        className="bg-amber-600 hover:bg-amber-700  text-white px-6 py-2 rounded font-semibold transition inline-flex gap-2"
                         to="/hosting/listings/new">
-                        +
                         Add Listing
                     </Link>
+                   </div>
                 </div>
-                <div className="mt-8 border rounded-2xl px-8 py-5 bg-white">
-                <div className="flex justify-center gap-12">
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500">
-                            Active
+                <div className="mt-6 mb-2 border border-gray-400 rounded-3xl bg px-2 py-2 bg-white">
+                <div className="flex justify-end-safe gap-6">
+                    <div className="flex gap-1 border border-gray-300 py-1 rounded-2xl bg-gray-200 px-4 items-center">
+                        <p className="font-semibold text-green-800 ">
+                            Active 
                         </p>
-                        <p className="text-2xl font-bold text-green-600">
-                            {activeListings}
+                        <p className="text-md text-gray-700">
+                            ({activeListings})
                         </p>
                     </div>
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500">
+                    <div className="flex gap-1 border border-gray-300 py-1 rounded-2xl bg-gray-200 px-4 items-center">
+                        <p className="font-semibold text-orange-800 ">
                             Inactive
                         </p>
-                        <p className="text-2xl font-bold text-orange-600">
-                            {inactiveListings}
+
+                        <p className="text-md text-gray-700">
+                            ({inactiveListings})
                         </p>
                     </div>
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500">
+                    <div className="flex gap-1 border border-gray-300 py-1 rounded-2xl bg-gray-200 px-4 items-center">
+                        <p className="font-semibold text-gray-900 ">
                             Total Listings
                         </p>
-                        <p className="text-2xl font-bold">
-                            {totalListings}
+
+                        <p className="text-md text-gray-700">
+                            ({totalListings})
                         </p>
                     </div>
                 </div>
@@ -134,8 +140,8 @@ export default function PlacesPage(){
                     return (
                             <div
                                 key={place._id}
-                                className="relative hover:bg-gray-100 shadow-md hover:shadow-lg border border-gray-300 flex gap-6 rounded-2xl items-stretch">
-                                <div className="w-50 h-40 flex-shrink-0 overflow-hidden rounded-l-2xl">
+                                className="relative hover:bg-gray-100 shadow-md hover:shadow-lg border border-gray-300 flex rounded items-stretch">
+                                <div className="w-50 h-42 flex-shrink-0 overflow-hidden rounded-l">
                                     {firstPhoto ? (
                                         <img
                                             className="w-full h-full object-cover"
@@ -148,16 +154,43 @@ export default function PlacesPage(){
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col mb-8 justify-center">
+                                <div className="flex flex-col w-full justify-center">
                                     <div className="relative flex items-center justify-between">
-                                    <h2 className="text-xl mb-2 font-semibold">{place.title}</h2>
+                                    <h2 className="text-xl ml-6 py-4 font-semibold">{place.title}</h2>
                                      
                                     </div>
-                                    <p className="w-140 text-sm text-gray-600 mt-2 line-clamp-3">
+                                    <p className="w-150 ml-6 mb-3 line-clamp-2 text-sm text-gray-600">
                                         {place.description}
                                     </p>
+                                    <div className="w-full flex flex-row items-center p-2 h-12 relative mt-2">
+                                        <div className="px-4 font-semibold text-sm">
+                                            ₹ {place.price}.00
+                                        </div>
+                                        <button 
+                                            onClick={() =>
+                                            setOpenMenu(OpenMenu === place._id ? null : place._id)
+                                            }
+                                            className="text-amber-500 hover:text-amber-600 hover:cursor-pointer font-semibold text-sm absolute right-57">
+                                            More Actions
+                                        </button>
+                                        <div className="absolute right-30">
+                                            <Link
+                                                to={`/hosting/listings/${place._id}`}
+                                                className="px-6 py-1.5 hover:cursor-pointer font-semibold text-sm rounded border text-orange-400 border-orange-400 hover:text-orange-600 hover:border-orange-600 ">
+                                                Modify
+                                            </Link>
+                                        </div>
+                                        <div className="absolute right-4">
+                                            <Link 
+                                                to={`/places/${place._id}`}
+                                                className="px-8 py-1.5 hover:cursor-pointerrounded border font-semibold text-sm text-white bg-orange-400 hover:bg-orange-500">
+                                                View
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="absolute right-16 top-3.5">
+                                
+                                <div className="absolute right-4 top-3.5">
                                 <span 
                                     className={`min-w-[90px] px-4 py-2 rounded-2xl border border-gray-300 text-xs font-medium flex items-center justify-center gap-1
                                             ${
@@ -169,17 +202,7 @@ export default function PlacesPage(){
                                         {place.isListed ? "🟢 Active" : "🟠 Inactive"}
                                 </span>
                                 </div>
-                                <div className="absolute top-3 right-4">
-                                    <button
-                                        onClick={() =>
-                                            setOpenMenu(OpenMenu === place._id ? null : place._id)
-                                        }
-                                        className="p-2 rounded-full hover:bg-gray-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                                        </svg>
-                                    </button>
-                                    {OpenMenu === place._id && (
+                                {OpenMenu === place._id && (
                                         <>
                                          {/* Backdrop */}
                                             <div
@@ -222,7 +245,6 @@ export default function PlacesPage(){
                                             onConfirm={deletePlace}
                                         />
                                     )}
-                                </div>
                             </div>
                         );
                     })}

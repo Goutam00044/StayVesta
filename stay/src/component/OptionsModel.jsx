@@ -35,7 +35,7 @@ export default function OptionsModel({place, onClose, onToggleListing, onDelete}
                 </Link>
                 
                 <Link
-                    to={`/account/places/${place._id}`}
+                    to={`/hosting/listings/${place._id}`}
                     className="flex items-center gap-3 hover:bg-gray-200 px-4 py-3 transition group"
                     onClick={onClose}
                 >
