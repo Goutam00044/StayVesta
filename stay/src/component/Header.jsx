@@ -86,10 +86,11 @@ export default function Header() {
                 <button
                     onClick={() => {
                         navigate("/hosting");
+                        toast.success("Switched to Hosting");
                     }}
                     className="border-2 border-black px-3 py-1 rounded-full"
                 >
-                    Hosting
+                    Switch to Hosting
                 </button>
 
             )}
