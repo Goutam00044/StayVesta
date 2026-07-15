@@ -7,6 +7,9 @@ export function UserContextProvider({children}){
     const [user, setUser] = useState(null);
     const [ready, setready] = useState(false);
     const [pendingBooking, setPendingBooking] = useState(null);
+    // const [hostMode, setHostMode] = useState(() => {
+    //     return localStorage.getItem("hostMode") === "true";
+    // });
     useEffect(() => {
         // Fetch current user once on mount. Rely on axios.defaults.withCredentials
         // being set early so the session cookie is sent.
@@ -18,10 +21,17 @@ export function UserContextProvider({children}){
                     setUser(data);
                     setready(true);
                 }
-                
+                // Only if user is NOT a host
+                // if (!data.isHost) {
+                //     setHostMode(false);
+                //     localStorage.removeItem("hostMode");
+                // }
             })
             .catch(() => {
-                if (mounted) setUser(null);
+                if (mounted) {
+                    setUser(null);
+                    setready(true);
+                }
             });
         return () => { mounted = false; };
     }, []);
@@ -29,7 +39,7 @@ export function UserContextProvider({children}){
     useEffect(() => {
         console.log('UserContext user changed:', user);
     }, [user]);
-    
+
     return(
         <UserContext.Provider value={{user, setUser, ready, pendingBooking, setPendingBooking}}>
             {children} 

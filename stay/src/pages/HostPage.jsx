@@ -4,7 +4,7 @@ import { UserContext } from "../UserContext";
 import axios from "axios";
 
 export default function HostingPage() {
-    const { user } = useContext(UserContext);
+    const { user, ready } = useContext(UserContext);
     const [places, setplaces] = useState([]);
 
     useEffect(() => {
@@ -13,6 +13,12 @@ export default function HostingPage() {
     });
     }, []);
 
+    if (!ready) return null;
+
+    if (!user?.isHost) {
+        return <Navigate to="/" />;
+    }
+    
     const previewListings = places.slice(0, 2);
 
     return (
@@ -118,7 +124,7 @@ export default function HostingPage() {
                         <h3 className="text-xl font-semibold">
                             Create a new listing
                         </h3>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-500 text-s  m">
                             Share your property to showcase it, so guests can book.
                         </p>
                     </div>

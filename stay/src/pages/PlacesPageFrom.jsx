@@ -1,10 +1,11 @@
 import PhotosUploader from "../component/PhotosUploader";
 import Perks from "../component/Perks";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import AccountNav from "../component/AccountNav";
 import axios from "axios";
 import { Link, Navigate, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { UserContext } from "../UserContext";
 
 export default function PlacesPageFrom(){
     const {id} = useParams();
@@ -20,6 +21,8 @@ export default function PlacesPageFrom(){
     const [price, setprice] = useState(0)
     const [redirect, setredirect] = useState('');
     const navigate = useNavigate();
+    const { user, ready } = useContext(UserContext);
+
 
     useEffect(() => {
       if(!id){
@@ -40,7 +43,11 @@ export default function PlacesPageFrom(){
                 setprice(place.price);
         })
     }, [id])
-    
+
+    if (!ready) return null;
+    if (!user?.isHost) {
+        return <Navigate to="/" />;
+    }
 
     function inputHeader(text) {
     return (

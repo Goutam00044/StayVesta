@@ -125,8 +125,8 @@ app.get('/profile', (req, res) => {
             if (err) {
                 return res.status(401).json(null);
             }
-            const { fname, lname, email, _id } = await User.findById(userData.id);
-            return res.json({fname, lname, email, _id });
+            const { fname, lname, email, _id, isHost} = await User.findById(userData.id);
+            return res.json({fname, lname, email, _id, isHost});
         });
     }
     else {
@@ -171,7 +171,13 @@ app.patch('/user/become-host', async (req, res) => {
 
             res.json({
                 message: "You are now a host",
-                user
+                user:{
+                    _id: user._id,
+                    fname: user.fname,
+                    lname: user.lname,
+                    email: user.email,
+                    isHost: user.isHost,
+                }
             });
 
         });

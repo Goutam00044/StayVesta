@@ -4,22 +4,39 @@ import { useContext, useState, useEffect } from "react";
 import { format, addDays } from 'date-fns';
 import SearchModel from "./SearchModel";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Header() {
-    const {user, setUser}= useContext(UserContext);
+    const {user, setUser, hostMode, setHostMode }= useContext(UserContext);
     const navigate = useNavigate();
+    const location = useLocation();
+    const isHostingPage = location.pathname.startsWith("/hosting");
+    
     async function handleBecomeHost(){
       try{
         const {data} = await axios.patch("/user/become-host",{},{
                 withCredentials:true
             });
-            console.log(data.data);
+            console.log(data.user);
             setUser(data.user);
+            setHostMode(true);
             navigate("/hosting");
+            toast.success("Switched to Host")
       }
       catch(error){
         console.log(error.response?.data || error.message);
       }
+    }
+    function switchToUser() {
+      setHostMode(false);
+      navigate("/");
+      toast.success("Switched to User")
+      }
+
+    function switchToHost() {
+    setHostMode(true);
+    navigate("/hosting");
+    toast.success("Switched to Host");
     }
     return(
         <>
@@ -44,14 +61,37 @@ export default function Header() {
             </>   
           )}
           
-          {user?.isHost ? (
-                <button className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl'>
-                    Switch to travelling
-                </button>
-            ) : (
-                <button onClick={handleBecomeHost} className='border-2 border-black text-black px-3 py-1 rounded-l-2xl rounded-r-2xl' >
+          {!user?.isHost ? (
+                <button
+                    onClick={handleBecomeHost}
+                    className="border-2 border-black px-3 py-1 rounded-full"
+                >
                     Become a Host
                 </button>
+
+            ) : isHostingPage ? (
+
+                <button
+                    onClick={() => {
+                        navigate("/");
+                        toast.success("Switched to User");
+                    }}
+                    className="border-2 border-black px-3 py-1 rounded-full"
+                >
+                    Switch to User
+                </button>
+
+            ) : (
+
+                <button
+                    onClick={() => {
+                        navigate("/hosting");
+                    }}
+                    className="border-2 border-black px-3 py-1 rounded-full"
+                >
+                    Hosting
+                </button>
+
             )}
         </div>
       </header>

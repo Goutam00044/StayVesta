@@ -1,13 +1,15 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import AccountNav from "../component/AccountNav";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import OptionsModel from "../component/OptionsModel";
 import DeletePlaceModal from "../component/DeletePlaceModal";
 import toast from "react-hot-toast";
 import ConfirmAction from "../component/ConfirmAction";
+import { UserContext } from "../UserContext";
 
 export default function PlacesPage(){
+    const { user, ready } = useContext(UserContext);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [places, setPlaces] = useState([]);
@@ -22,6 +24,12 @@ export default function PlacesPage(){
             setPlaces(response.data);
         })
     },[])
+
+    if (!ready) return null;
+    if (!user?.isHost) {
+        return <Navigate to="/" />;
+    }
+
     console.log(showDeleteModal);
     async function toggleListing(placeId) {
     try {
