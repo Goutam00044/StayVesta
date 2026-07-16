@@ -148,7 +148,7 @@ export default function PlacesPage(){
                     return (
                             <div
                                 key={place._id}
-                                className="relative hover:bg-gray-100 shadow-md hover:shadow-lg border border-gray-300 flex rounded items-stretch">
+                                className="relative hover:bg-gray-100 mb-1 shadow-md hover:shadow-lg border border-gray-300 flex rounded items-stretch">
                                 <div className="w-50 h-42 flex-shrink-0 overflow-hidden rounded-l">
                                     {firstPhoto ? (
                                         <img

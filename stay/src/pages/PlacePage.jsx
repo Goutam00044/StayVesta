@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect,useState } from "react";
 import { useParams } from "react-router-dom"
-import BookingWidget from "../component/BookingWidget";
+import BookingWidget from "../component/place/BookingWidget";
+import PlaceHeader from "../component/place/PlaceHeader.jsx";
 
 export default function PlacePage()
 {
@@ -49,16 +50,9 @@ export default function PlacePage()
 
     return(
         <div>
-        <div className="bg-gray-200 pt-8 px-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
            <div className="px-4">
-             <h1 className="text-2xl" >{place.title}</h1>
-             <a className="flex mt-1 my-2 gap-1 font-semibold underline" target="_blank" href={"https://maps.google.com//?q="+place.address}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                </svg>
-             {place.address}
-             </a>
+             <PlaceHeader place={place} />
             </div>
            <div className="relative">
             <div className="grid  gap-2 grid-cols-[2fr_1fr] rounded-2xl overflow-hidden">

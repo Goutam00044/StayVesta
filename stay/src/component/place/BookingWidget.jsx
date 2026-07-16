@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { differenceInCalendarDays } from "date-fns";
-import { UserContext } from "../UserContext.jsx";
-import ConfirmBookingModal from "./ConfirmBookingModal";
+import { UserContext } from "../../UserContext.jsx";
+import ConfirmBookingModal from "./ConfirmBookingModal.jsx";
 
 export default function BookingWidget({ place }) {
 
