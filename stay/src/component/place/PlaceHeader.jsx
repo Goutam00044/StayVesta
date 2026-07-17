@@ -1,4 +1,3 @@
-
 export default function PlaceHeader({ place }) {
     return (
         <section className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

@@ -20,7 +20,7 @@ export default function PlaceGallery({
                         <img
                             onClick={() => setshowallphotos(true)}
                             src={BASE_URL + place.photos[0]}
-                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-500"
+                            className="w-full h-full object-cover cursor-pointer hover:scale-[1.02] hover:brightness-95 transition duration-500"
                             alt=""
                         />
 
@@ -42,7 +42,7 @@ export default function PlaceGallery({
                             <img
                                 onClick={() => setshowallphotos(true)}
                                 src={BASE_URL + place.photos[index]}
-                                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-500"
+                                className="w-full h-full object-cover cursor-pointer hover:scale-[1.02] transition duration-500"
                                 alt=""
                             />
 

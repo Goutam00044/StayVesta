@@ -71,60 +71,83 @@ export default function BookingWidget({ place }) {
                 />
             )}
 
-            <div className="bg-white shadow p-4 rounded-2xl">
-
-                <div className="text-2xl text-center">
-                    Price: ₹{place.price} / per night
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6">
+                <div className="pb-6 border-b border-gray-200">
+                    <div className="flex items-end px-2 gap-2">
+                        <span className="text-3xl font-bold text-gray-900">
+                           ₹{place.price.toLocaleString("en-IN")}
+                        </span>
+                        <span className="text-gray-500 mb-1">
+                            /per night
+                        </span>
+                    </div>
                 </div>
 
-                <div className="border rounded-2xl mt-4">
-
-                    <div className="flex">
-                        <div className="py-3 px-4">
-                            <label>Check In :</label>
+                <div className="mt-6 overflow-hidden rounded-2xl border border-gray-300">
+                    <div className="grid grid-cols-2">
+                        <div className="p-4 border-l border-gray-300">
+                            <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">
+                                Check-in
+                            </label>
                             <input
                                 type="date"
+                                min={new Date().toISOString().split("T")[0]}
                                 value={checkIn}
                                 onChange={(ev) => setcheckIn(ev.target.value)}
+                                className="w-full h-8 border-0 p-0 focus:ring-0 text-gray-900"
                             />
                         </div>
-                        <div className="py-3 px-4 border-l">
-                            <label>Check Out :</label>
+                        <div className="p-4 border-l border-gray-300">
+                            <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">
+                                Check-Out
+                            </label>
                             <input
                                 type="date"
+                                min={new Date().toISOString().split("T")[0]}
                                 value={checkOut}
                                 onChange={(ev) => setcheckOut(ev.target.value)}
+                                className="w-full h-8 border-0 p-0 focus:ring-0 text-gray-900"
                             />
                         </div>
 
                     </div>
 
-                    <div className="py-3 px-4 border-t">
-                        <label>Number Of Guests :</label>
+                    <div className="p-4 border-t border-gray-300">
+                        <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">
+                            Guests
+                        </label>
                         <input
                             type="number"
+                            placeholder="Number of Guests"
                             value={numberGuest}
                             onChange={(ev) => setnumberGuest(ev.target.value)}
+                            className="w-full border-0 p-0 focus:ring-0 text-gray-900 placeholder:text-gray-400"
                         />
                     </div>
-
-                    <div className="py-3 px-4 border-t">
-                        <label>Name :</label>
+                    
+                    <div className="py-3 px-4 border-t border-gray-300">
+                        <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">
+                            Name
+                        </label>
                         <input
                             type="text"
-                            placeholder="Enter your name"
+                            placeholder="Full name"
                             value={name}
                             onChange={(ev) => setname(ev.target.value)}
+                            className="w-full border-0 p-0 focus:ring-0 text-gray-900 placeholder:text-gray-400"
                         />
                     </div>
 
-                    <div className="py-3 px-4 border-t">
-                        <label>Phone :</label>
+                    <div className="p-4 border-t border-gray-300">
+                        <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">
+                            Phone
+                        </label>
                         <input
                             type="tel"
                             placeholder="333-666-999"
                             value={phone}
                             onChange={(ev) => setphone(ev.target.value)}
+                            className="w-full border-0 p-0 focus:ring-0 text-gray-900 placeholder:text-gray-400"
                         />
                     </div>
 
@@ -132,13 +155,28 @@ export default function BookingWidget({ place }) {
 
                 <button
                     onClick={() => setmodel(true)}
-                    className="bg-amber-600 text-white mt-2 w-full px-3 py-2 rounded-l-2xl rounded-r-2xl"
+                    className="
+                        w-full
+                        mt-6
+                        bg-amber-500
+                        hover:bg-amber-600
+                        text-white
+                        font-semibold
+                        py-4
+                        rounded-2xl
+                        transition-all
+                        duration-300
+                        shadow-md
+                        hover:shadow-lg
+                        "
                 >
-                    Book now
+                    Reserve now
 
                     {numberOfNight > 0 && (
-                        <span> ₹{numberOfNight * place.price}</span>
-                    )}
+                            <div className="text-sm font-normal opacity-90 mt-1">
+                                ₹{numberOfNight * place.price} Total
+                            </div>
+                        )}
 
                 </button>
 

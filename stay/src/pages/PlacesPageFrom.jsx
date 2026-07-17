@@ -210,8 +210,8 @@ export default function PlacesPageFrom(){
                         </div>
 
                         {preInput('Select Amenities', 'Choose all the amenities your place offers')}
-                        <div className="px-4 py-4 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                            <Perks selected={perks} onChange={setPerks}/>
+                        <div className="px-4 py-4">
+                            <Perks selected={perks} onChange={setPerks} variant="form"/>
                         </div>
                     </div>
 
