@@ -33,11 +33,11 @@ export default function ConfirmBookingModal({ checkIn, checkOut, onClose, onConf
 
   function handleConfirm() {
     if (!localIn || !localOut) {
-      toast.success("Please select both check-in and check-out dates.");
+      toast.error("Please select both check-in and check-out dates.");
       return;
     }
     if (nights <= 0) {
-      toast.success("Check-out must be after check-in.");
+      toast.error("Check-out must be after check-in.");
       return;
     }
     onConfirm(localIn, localOut);

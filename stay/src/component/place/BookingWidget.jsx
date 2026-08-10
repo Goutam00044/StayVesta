@@ -154,7 +154,14 @@ export default function BookingWidget({ place }) {
                 </div>
 
                 <button
-                    onClick={() => setmodel(true)}
+                    onClick={() => {
+                            if (!user) {
+                                setredirect("/login");
+                                return;
+                            }
+
+                            setmodel(true);
+                        }}
                     className="
                         w-full
                         mt-6
@@ -170,7 +177,7 @@ export default function BookingWidget({ place }) {
                         hover:shadow-lg
                         "
                 >
-                    Reserve now
+                    {user ? "Reserve now" : "Login to Reserve"}
 
                     {numberOfNight > 0 && (
                             <div className="text-sm font-normal opacity-90 mt-1">

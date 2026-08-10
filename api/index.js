@@ -435,42 +435,54 @@ app.get('/places', async (req, res) => {
     // If no, keep it.
 });
 
+// Now /booking cannot create a booking without a user.
 app.post('/booking', async (req, res) => {
-    const userData = await userDataFromReq(req);
+    try {
+        const userData = await userDataFromReq(req);
 
-    const {
-        place,
-        checkIn,
-        checkOut,
-        numberGuest,
-        name,
-        phone,
-        price,
-        paymentStatus,
-        razorpayOrderId,
-        razorpayPaymentId,
-    } = req.body;
+        if (!userData?.id) {
+            return res.status(401).json({
+                error: 'Unauthorized'
+            });
+        }
 
-    Booking.create({
-        place,
-        checkIn,
-        checkOut,
-        numberGuest,
-        name,
-        phone,
-        price,
-        user: userData.id,
-        paymentStatus,
-        razorpayOrderId,
-        razorpayPaymentId,
-    }).then((doc) => {
-        res.json(doc)
-    }).catch((err) => {
+        const {
+            place,
+            checkIn,
+            checkOut,
+            numberGuest,
+            name,
+            phone,
+            price,
+            paymentStatus,
+            razorpayOrderId,
+            razorpayPaymentId,
+        } = req.body;
+
+        const booking = await Booking.create({
+            place,
+            checkIn,
+            checkOut,
+            numberGuest,
+            name,
+            phone,
+            price,
+            user: userData.id,
+            paymentStatus,
+            razorpayOrderId,
+            razorpayPaymentId,
+        });
+
+        res.json(booking);
+
+    } catch (err) {
         console.error(err);
-    })
 
-
-})
+        res.status(500).json({
+            error: 'Failed to create booking'
+        });
+    }
+});
 
 app.get('/bookings', async (req, res) => {
     try {
@@ -485,49 +497,97 @@ app.get('/bookings', async (req, res) => {
         res.status(500).json({ error: e.message || 'Failed to fetch bookings' });
     }
 })
-
+// Create Razorpay Order API which only creates order is User is logged in.
 app.post('/create-order', async (req, res) => {
-    const {
-        place,
-        checkIn,
-        checkOut,
-        numberGuest,
-        name,
-        phone,
-        price
-    } = req.body;
     try {
+
+        const userData = await userDataFromReq(req);
+
+        if (!userData?.id) {
+            return res.status(401).json({
+                error: 'Unauthorized'
+            });
+        }
+
+        const {
+            place,
+            checkIn,
+            checkOut,
+            numberGuest,
+            name,
+            phone,
+            price
+        } = req.body;
+
         const options = {
             amount: price * 100,
             currency: "INR",
-            //receipt: `receipt_${Date.now()}`
         };
+
         const order = await razorpay.orders.create(options);
+
         res.json(order);
+
     } catch (err) {
+
         console.log(err);
+
         res.status(500).json({
             message: "Unable to create order"
         });
     }
 });
 
+// Verify Razorpay Payment API which only verifies payment is User is logged in.
 app.post('/verify-payment', async (req, res) => {
-    const {
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-    } = req.body; //recieve these values from the frontend after payment completion 
-    const generatedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-        .update(razorpay_order_id + "|" + razorpay_payment_id).digest("hex");
-    if (generatedSignature === razorpay_signature) {
-        res.json({
-            success: true
-        });
-    } else {
-        res.status(400).json({
-            success: false
+
+    try {
+
+        const userData = await userDataFromReq(req);
+
+        if (!userData?.id) {
+            return res.status(401).json({
+                error: 'Unauthorized'
+            });
+        }
+
+        const {
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature
+        } = req.body;
+
+        const generatedSignature = crypto
+            .createHmac(
+                "sha256",
+                process.env.RAZORPAY_KEY_SECRET
+            )
+            .update(
+                razorpay_order_id + "|" + razorpay_payment_id
+            )
+            .digest("hex");
+
+        if (generatedSignature === razorpay_signature) {
+
+            res.json({
+                success: true
+            });
+
+        } else {
+
+            res.status(400).json({
+                success: false
+            });
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false,
+            error: "Payment verification failed"
         });
     }
 });
