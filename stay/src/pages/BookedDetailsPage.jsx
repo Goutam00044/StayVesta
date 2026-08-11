@@ -44,7 +44,7 @@ export default function BookedDetailsPage() {
     }
     console.log(showCancelModal);
     return (
-        <div className="px-4 mb-12">
+        <div className="max-w-6xl mx-auto px-4 mb-12">
             {showCancelModal && (
                 <CancelBookingModel
                     booking={bookinfo}
@@ -59,23 +59,30 @@ export default function BookedDetailsPage() {
                 />
             )}
             <div className="mt-4 ">
-                <Link to={"/account/booked"}
-                    className="inline-block self-start group mb-4"
-                >
-                    <div className="mt-1 font-semibold">Back</div>
-                    <div className="border-t-[1.5px] w-9 group-hover:opacity-0 transition-opacity duration-500"></div>
-                </Link>
-                <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-                    Booking Details
-                </h1>
-                <p className="text-sm text-black mb-8">
+                <div className="flex items-center gap-2 mb-1">
+                    <Link
+                        to="/account/booked"
+                        className="inline-flex group"
+                        >
+                        <span className="text-xl transition-transform duration-300 group-hover:-translate-x-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </span>
+                    
+                    </Link>
+                    <h1 className="text-2xl font-semibold text-gray-900">
+                        Booking Details
+                    </h1>
+                </div>
+                <p className="text-sm pl-8 text-black mb-8">
                     Check the booking details before payment information.                
                 </p>
             </div>
             <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-300 shadow-sm hover:shadow-2xl bg-white">
                 {/* Left */}
 
-                <div className="md:w-5/12 relative min-h-64">
+                <div className="md:w-5/12 relative min-h-55">
                     <img
                         src={
                             "http://localhost:4000/uploads/" +

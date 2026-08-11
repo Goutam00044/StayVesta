@@ -13,11 +13,22 @@ export default function BookingPage() {
 
     const { pendingBooking, setPendingBooking } = useContext(UserContext);
 
-    useEffect(() => { 
-        if (pendingBooking) {
-            setbookinfo(pendingBooking);
-        }
-    }, [pendingBooking]);
+    useEffect(() => {
+    if (!pendingBooking) {
+        setbookinfo(null);
+        return;
+    }
+
+    if (!isValidBooking(pendingBooking)) {
+        toast.error("Your booking details are incomplete.");
+        setPendingBooking(null);
+        setredirect("/");
+
+        return;
+    }
+
+    setbookinfo(pendingBooking);
+}, [pendingBooking, setPendingBooking]);
     // Never Used function, but it been used before to create booking without payment gateway
     // async function book(){
     //     if (!pendingBooking) return;
@@ -32,6 +43,49 @@ export default function BookingPage() {
     //     });
     //     return response.data;
     // }
+
+    function isValidBooking(booking) {
+    if (!booking) return false;
+
+    if (!booking.place?._id) return false;
+
+    if (!booking.checkIn || !booking.checkOut) return false;
+
+    const checkIn = new Date(booking.checkIn);
+    const checkOut = new Date(booking.checkOut);
+
+    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+        return false;
+    }
+
+    if (differenceInCalendarDays(checkOut, checkIn) <= 0) {
+        return false;
+    }
+
+    if (!booking.numberGuest || Number(booking.numberGuest) < 1) {
+        return false;
+    }
+
+    if (!booking.name?.trim()) {
+        return false;
+    }
+
+    if (!booking.phone?.trim()) {
+        return false;
+    }
+
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (!phoneRegex.test(booking.phone.trim())) {
+        return false;
+    }
+
+    if (!booking.price || Number(booking.price) <= 0) {
+        return false;
+    }
+
+    return true;
+    }
 
    async function handlePayClick() {
     const loadingToast = toast.loading("Processing payment...");
@@ -105,34 +159,54 @@ export default function BookingPage() {
     }
 
     if (!bookinfo) {
-        return (
-            <div className="text-center py-16 text-black text-sm">
+    return (
+        <div className="max-w-xl mx-auto px-4 py-20 text-center">
+            <h1 className="text-xl font-semibold text-gray-900">
                 No booking found
-            </div>
-        );
-    }
+            </h1>
+
+            <p className="text-sm text-gray-500 mt-2">
+                Please select a property and start your booking again.
+            </p>
+
+            <Link
+                to="/"
+                className="inline-block mt-6 bg-black text-white px-6 py-3 rounded-xl"
+            >
+                Browse stays
+            </Link>
+        </div>
+    );
+}
 
     return (
-        <div className="px-4 mb-16">
+        <div className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-4 py-4 sm:py-4 lg:py-5">
             <div>
-                <Link
-                    to={"/"}    
-                    className="inline-block self-start group mb-4"
-                >
-                    <div className="mt-1 font-semibold">Back</div>
-                    <div className="border-t-[1.5px] w-9 group-hover:opacity-0 transition-opacity duration-500"></div>
-                </Link>
-                <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-                    Review your booking
-                </h1>
-                <p className="text-sm text-black mb-8">
+                <div className="flex items-center gap-2 mb-1">
+                        <Link
+                        to="/"
+                        className="inline-flex group"
+                        >
+                        <span className="text-xl transition-transform duration-300 group-hover:-translate-x-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </span>
+                    
+                    </Link>
+                    <h1 className="text-2xl font-semibold text-gray-900">
+                        Review your booking
+                    </h1>
+                    
+                </div>
+                <p className="text-sm pl-8 text-black mb-8">
                     Check the details before completing your payment.
-                </p>
+                    </p>
             </div>
 
             <div className="flex flex-col md:flex-row rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-300 bg-white">
                 {/* Left */}
-                <div className="md:w-5/12 relative min-h-65 ">
+                <div className="md:w-5/12 relative min-h-55 ">
                     <img
                         src={
                             "http://localhost:4000/uploads/" +
