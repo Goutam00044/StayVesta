@@ -48,7 +48,7 @@ export default function PlaceOverview({ place }) {
                 </div>
                 </section>
                 {/* Description */}
-                <section className="border-b border-gray-500 pb-10">
+                <section>
                 <h2 className="text-2xl border-b py-4 border-gray-500 font-semibold mb-4">
                     About this place
                 </h2>
@@ -68,9 +68,9 @@ export default function PlaceOverview({ place }) {
             </section>
 
             {/* Amenities */}
-                <section className="border-b border-gray-200 pb-10">
+                <section>
 
-                    <h2 className="text-2xl font-semibold mb-6">
+                    <h2 className="text-2xl border-b py-4 border-gray-500 font-semibold mb-6">
                         What this place offers
                     </h2>
 
@@ -87,9 +87,9 @@ export default function PlaceOverview({ place }) {
             {/* Things to know */}
                <ThingsToKnow extraInfo={place.extraInfo} />
 
-            <section className="border-b border-gray-200 py-10">
+            <section className="border-b border-t border-gray-400 py-6">
                 <h2 className="text-2xl font-semibold">
-                    Hosted by {place.owner?.fname || "StayVesta Host"}
+                    Hosted by {place.owner?.fname || "StayVesta"}
                 </h2>
 
                 <p className="text-gray-600 mt-2">

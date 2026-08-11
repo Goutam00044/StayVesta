@@ -18,8 +18,8 @@ export default function ThingsToKnow({ extraInfo }) {
         });
 
     return (
-        <section className="border-b border-gray-200 py-10">
-            <h2 className="text-2xl font-semibold mb-8">
+        <section>
+            <h2 className="text-2xl border-b py-4 border-gray-500 font-semibold mb-8">
                 Things to know
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">

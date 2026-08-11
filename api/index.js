@@ -590,7 +590,7 @@ app.post('/verify-payment', async (req, res) => {
             error: "Payment verification failed"
         });
     }
-});
+}); 
 
 app.get('/bookings/:id', async (req, res) => {
     try {
