@@ -21,7 +21,29 @@ export default function BookedDetailsPage() {
     }, [id]);
     console.log(bookinfo);
     if (!bookinfo) {
-        return <div>Loading...</div>;
+        return <BookingsLoading />;
+    }
+
+     function BookingsLoading() {
+    return (
+        <div className="space-y-4">
+
+            {[1].map((item) => (
+                <div
+                    key={item}
+                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden animate-pulse"
+                >
+                    <div className="lg:flex">
+
+                        <div className="w-full lg:w-60 h-48 lg:h-52 bg-gray-200"></div>
+
+                    </div>
+                </div>
+            ))
+            }
+
+        </div>
+    );
     }
 
     async function cancelBooking() {

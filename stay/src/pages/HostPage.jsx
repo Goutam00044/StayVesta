@@ -24,7 +24,7 @@ export default function HostingPage() {
     return (
         <div className="w-full max-w-3xl mx-auto px-6 py-6">
             <h1 className="text-4xl font-semibold">
-                Welcome back, {user?.fname}
+                Welcome, {user?.fname}
             </h1>
             <p className="text-gray-500 mt-1 text-sm">
                 Manage your listings and start hosting guests.

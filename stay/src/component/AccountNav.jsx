@@ -1,10 +1,9 @@
 import { useContext, useState } from "react";
 import { Link, Navigate, useLocation, } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import axios from "axios";
+import LogoutButton from "../component/LogoutButton";
 
 export default function AccountNav() {
-    const [redirect, setredirect] = useState(false);
     const {ready,user,setUser} = useContext(UserContext); 
     const {pathname} = useLocation();
     let subpage = pathname.split('/')?.[2];
@@ -32,24 +31,16 @@ export default function AccountNav() {
         return type === subpage ? '#d97706' : '#9ca3af';
     }
 
-    async function logout(){
-        await axios.post('/logout');
-        setredirect(true);
-        setUser(null);
-    }   
    
     if(!ready){
             return 'Loading..';
     }
     
-    if (ready && !user && !redirect){
+    if (ready && !user){
             return <Navigate to={'/login'}/>
         }
-    console.log(redirect);
     
-    if(redirect){
-        return <Navigate to={'/'}/>
-    }
+
 
     return(
         <nav className="flex flex-col gap-0.5 w-64 mt-2">
@@ -78,12 +69,7 @@ export default function AccountNav() {
 
             <div className="h-px bg-gray-200 my-2.5 mx-1"></div>
 
-            <button onClick={logout} className="flex items-center gap-3 px-4 py-3 rounded-xl border-l-[3px] border-transparent hover:bg-red-50 text-left w-64">
-                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#dc2626" className="size-5">
-                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3H15" />
-                 </svg>
-                 <span className="text-[14.5px] font-medium text-red-600">Logout</span>
-            </button>
+            <LogoutButton className="pl-1" mobile />
         </nav>
     )
 }

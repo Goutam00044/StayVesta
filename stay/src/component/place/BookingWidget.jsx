@@ -135,7 +135,7 @@ export default function BookingWidget({ place }) {
                 />
             )}
 
-            <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6">
+            <div className="bg-white rounded-3xl border border-gray-300 hover:shadow-lg p-6">
 
                 <div className="pb-6 border-b border-gray-200">
                     <div className="flex items-end px-2 gap-2">
