@@ -1,104 +1,247 @@
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import { useContext, useState, useEffect } from "react";
-import { format, addDays } from 'date-fns';
-import SearchModel from "./SearchModel";
+import { useContext } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function Header() {
-    const {user, setUser, hostMode, setHostMode }= useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
     const location = useLocation();
+
+    const isHomePage = location.pathname === "/";
     const isHostingPage = location.pathname.startsWith("/hosting");
-    
-    async function handleBecomeHost(){
-      try{
-        const {data} = await axios.patch("/user/become-host",{},{
-                withCredentials:true
-            });
+
+    async function handleBecomeHost() {
+        try {
+            const { data } = await axios.patch(
+                "/user/become-host",
+                {},
+                {
+                    withCredentials: true,
+                }
+            );
+
             console.log(data.user);
+
             setUser(data.user);
-            setHostMode(true);
+
             navigate("/hosting");
-            toast.success("Switched to Host")
-      }
-      catch(error){
-        console.log(error.response?.data || error.message);
-      }
+
+            toast.success("Switched to Host");
+        } catch (error) {
+            console.log(error.response?.data || error.message);
+        }
     }
+
     function switchToUser() {
-      setHostMode(false);
-      navigate("/");
-      toast.success("Switched to User")
-      }
+        navigate("/");
+        toast.success("Switched to User");
+    }
 
     function switchToHost() {
-    setHostMode(true);
-    navigate("/hosting");
-    toast.success("Switched to Host");
+        navigate("/hosting");
+        toast.success("Switched to Host");
     }
-    return(
-        <>
-        <header className="p-4 flex items-center justify-between">
-        {/* This is Logo for Our APP */}
-        <Link to={"/"} className="logo font-bold">
-        StayVersta
-        </Link>
-        {/* This is Login and Signup for Our APP */}
-        <div className='flex items-center gap-4'>
-          {!!user &&(
-            <Link to={'/account'}>
-              <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white text-xl flex-shrink-0">
-                  {user.fname.charAt(0).toUpperCase()}
-              </div>
-            </Link>
-          )}
-          {!user &&(
-            <>
-            <Link to="/login" className="font-bold">Log in</Link>
-            <Link to="/signup" className="font-bold">Sign up</Link>
-            </>   
-          )}
-          
-          {!user?.isHost ? (
-                <button
-                    onClick={handleBecomeHost}
-                    className="border-2 border-black px-3 py-1 rounded-full"
+
+    return (
+        <header
+            className={`
+                z-50 w-full
+                ${
+                    isHomePage
+                        ? "absolute top-0 left-0 text-white"
+                        : "relative bg-white text-black border-b border-gray-100"
+                }
+            `}
+        >
+            <div
+                className="
+                    max-w-7xl mx-auto
+                    px-4 lg:px-6
+                    h-20
+                    flex items-center justify-between
+                "
+            >
+
+                {/* Logo */}
+                <Link
+                    to="/"
+                    className={`
+                        text-2xl lg:text-3xl
+                        font-bold
+                        tracking-tight
+                        ${
+                            isHomePage
+                                ? "text-white"
+                                : "text-black"
+                        }
+                    `}
                 >
-                    Become a Host
-                </button>
+                    StayVesta
+                </Link>
 
-            ) : isHostingPage ? (
 
-                <button
-                    onClick={() => {
-                        navigate("/");
-                        toast.success("Switched to User");
-                    }}
-                    className="border-2 border-black px-3 py-1 rounded-full"
-                >
-                    Switch to User
-                </button>
+                {/* Right Navigation */}
+                <div className="flex items-center gap-5">
 
-            ) : (
+                    {/* Explore */}
+                    {!isHostingPage && (
+                        <Link
+                            to="/"
+                            className={`
+                                hidden md:block
+                                font-medium
+                                transition
+                                ${
+                                    isHomePage
+                                        ? "text-white hover:text-gray-200"
+                                        : "text-gray-700 hover:text-black"
+                                }
+                            `}
+                        >
+                            Explore
+                        </Link>
+                    )}
 
-                <button
-                    onClick={() => {
-                        navigate("/hosting");
-                        toast.success("Switched to Hosting");
-                    }}
-                    className="border-2 border-black px-3 py-1 rounded-full"
-                >
-                    Switch to Hosting
-                </button>
 
-            )}
-        </div>
-      </header>
+                    {/* Login / Signup */}
+                    {!user && (
+                        <>
+                            <Link
+                                to="/login"
+                                className={`
+                                    font-medium
+                                    transition
+                                    ${
+                                        isHomePage
+                                            ? "text-white hover:text-gray-200"
+                                            : "text-gray-700 hover:text-black"
+                                    }
+                                `}
+                            >
+                                Log in
+                            </Link>
 
-      {/* This is Search Module for Our APP */}
-        {/* <SearchModel/> */}
-        </>
-    )
+                            <Link
+                                to="/signup"
+                                className={`
+                                    font-medium
+                                    transition
+                                    ${
+                                        isHomePage
+                                            ? "text-white hover:text-gray-200"
+                                            : "text-gray-700 hover:text-black"
+                                    }
+                                `}
+                            >
+                                Sign up
+                            </Link>
+                        </>
+                    )}
+
+
+                    {/* Host Controls */}
+                    {!user?.isHost ? (
+
+                        <button
+                            onClick={handleBecomeHost}
+                            className={`
+                                border-2
+                                px-5 py-2 lg:py-2.5
+                                rounded-full
+                                font-semibold
+                                transition
+                                ${
+                                    isHomePage
+                                        ? "border-white text-white hover:bg-white hover:text-black"
+                                        : "border-black text-black hover:bg-black hover:text-white"
+                                }
+                            `}
+                        >
+                            <span className="hidden sm:inline">
+                                Become a host
+                            </span>
+                            <span className="sm:hidden">
+                                Start Hosting..
+                            </span>
+                        </button>
+
+                    ) : isHostingPage ? (
+
+                        <button
+                            onClick={switchToUser}
+                            className={`
+                                border-2
+                                px-5 py-2 lg:py-2.5
+                                rounded-full
+                                font-semibold
+                                transition
+                                ${
+                                    isHomePage
+                                        ? "border-white text-white hover:bg-white hover:text-black"
+                                        : "border-black text-black hover:bg-black hover:text-white"
+                                }
+                            `}
+                        >
+                            <span className="hidden sm:inline">
+                                Switch to User
+                            </span>
+                            <span className="sm:hidden">
+                                User
+                            </span>
+                        </button>
+
+                    ) : (
+
+                        <button
+                            onClick={switchToHost}
+                            className={`
+                                border-2
+                                px-5 py-2 lg:py-2.5
+                                rounded-full
+                                font-semibold
+                                transition
+                                ${
+                                    isHomePage
+                                        ? "border-white text-white hover:bg-white hover:text-black"
+                                        : "border-black text-black hover:bg-black hover:text-white"
+                                }
+                            `}
+                        >
+                             <span className="hidden sm:inline">
+                                Switch to Hosting
+                            </span>
+                            <span className="sm:hidden">
+                                Host
+                            </span>
+                        </button>
+
+                    )}
+
+
+                    {/* Profile */}
+                    {user && (
+                        <Link to="/account">
+                            <div
+                                className="
+                                    w-10 h-10
+                                    rounded-full
+                                    bg-amber-600
+                                    flex items-center justify-center
+                                    text-white
+                                    text-lg
+                                    font-semibold
+                                    flex-shrink-0
+                                "
+                            >
+                                {user.fname?.charAt(0).toUpperCase()}
+                            </div>
+                        </Link>
+                    )}
+
+                </div>
+            </div>
+        </header>
+    );
 }
