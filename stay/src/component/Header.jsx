@@ -68,7 +68,7 @@ export default function Header() {
                 <Link
                     to="/"
                     className={`
-                        text-2xl lg:text-3xl
+                        text-2xl
                         font-bold
                         tracking-tight
                         ${
@@ -148,7 +148,7 @@ export default function Header() {
                             onClick={handleBecomeHost}
                             className={`
                                 border-2
-                                px-5 py-2 lg:py-2.5
+                                px-6 py-2 lg:px-6 lg:py-2
                                 rounded-full
                                 font-semibold
                                 transition
@@ -173,7 +173,7 @@ export default function Header() {
                             onClick={switchToUser}
                             className={`
                                 border-2
-                                px-5 py-2 lg:py-2.5
+                                px-6 py-2 lg:px-5 lg:py-2.5
                                 rounded-full
                                 font-semibold
                                 transition
@@ -198,7 +198,7 @@ export default function Header() {
                             onClick={switchToHost}
                             className={`
                                 border-2
-                                px-5 py-2 lg:py-2.5
+                                px-6 py-2 lg:px-5 lg:py-2.5
                                 rounded-full
                                 font-semibold
                                 transition
