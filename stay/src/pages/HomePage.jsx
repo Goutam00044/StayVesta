@@ -6,6 +6,7 @@ export default function Homepage()
 {   
     const location = useLocation();
     const [places, setplaces] = useState([]);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -26,7 +27,7 @@ export default function Homepage()
     }, [location.search]);
 
     return (
-    <main className="bg-white">
+    <main className="bg-gray-50">
 
         {/* =========================
             HERO SECTION
@@ -42,7 +43,7 @@ export default function Homepage()
                 bg-center
             "
             style={{
-                backgroundImage: "url('/public/stayvesta-hero.png')",
+                backgroundImage: "url('/stayvesta-hero.png')",
             }}
         >
 
@@ -92,29 +93,84 @@ export default function Homepage()
                     </p>
 
                     {/* Search Model */}
-                    <div className="mt-8 text-left">
-                        <SearchModel />
+                   <div className="mt-8 text-left">
+                        <SearchModel
+                            onMobileSearchOpen={() => setIsMobileSearchOpen(true)}
+                        />
                     </div>
-
                 </div>
             </div>
         </section>
+    
+        {isMobileSearchOpen && (
+        <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto md:hidden">
 
+            <div className="flex items-center gap-4 px-5 py-5 border-b border-gray-200">
+
+                <button
+                    onClick={() => setIsMobileSearchOpen(false)}
+                    className="
+                        w-10
+                        h-10
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        text-gray-700
+                        text-xl
+                        flex-shrink-0
+                    "
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
+
+                </button>
+
+                <h2 className="text-xl font-bold text-gray-900">
+                    Search stays
+                </h2>
+
+            </div>
+
+            <div className="px-5 py-6">
+
+                <SearchModel
+                    mobileExpanded={true}
+                    onMobileSearchClose={() => setIsMobileSearchOpen(false)}
+                />
+
+            </div>
+
+        </div>
+    )}
 
         {/* =========================
             EXISTING PLACES SECTION
         ========================== */}
         <section
             className="
+                relative
+                z-20
+                w-[94%]
                 max-w-7xl
                 mx-auto
-                px-6
-                lg:px-8
-                py-14
-                lg:py-16
+                -mt-24
             "
         >
-
+        <div
+            className="
+                bg-white
+                rounded-3xl
+                shadow-[0_12px_35px_rgba(0,0,0,0.16)]
+                border border-gray-100
+                px-6
+                lg:px-8
+                py-8
+                lg:py-10
+            "
+        >
             <div className="mb-8">
                 <h2
                     className="
@@ -124,7 +180,10 @@ export default function Homepage()
                         text-gray-900
                     "
                 >
-                    Weekend stays near you
+                    {location.search && new URLSearchParams(location.search).get("destination")
+                            ? `Stays in ${new URLSearchParams(location.search).get("destination")}`
+                            : "Weekend stays near you"
+                        }
                 </h2>
 
                 <p className="mt-2 text-gray-500">
@@ -155,6 +214,7 @@ export default function Homepage()
                         grid-cols-2
                         md:grid-cols-3
                         lg:grid-cols-4
+                        xl:grid-cols-5
                         gap-x-6
                         gap-y-8
                     "
@@ -164,23 +224,27 @@ export default function Homepage()
                         <Link
                             to={'/places/' + place._id}
                             key={place._id}
+                            className="group"
                         >
 
-                            <div className="flex mb-2 rounded-2xl bg-gray-500">
+                            <div className="flex mb-2 rounded-2xl bg-gray-400">
 
                                 {place.photos?.[0] && (
                                     <img
                                         className="
-                                            rounded-2xl
-                                            object-cover
-                                            aspect-square
-                                            w-full
-                                        "
+                                                w-full
+                                                rounded-2xl
+                                                object-cover
+                                                aspect-square
+                                                transition-transform
+                                                duration-300
+                                                hover:brightness-88
+                                            "
                                         src={
                                             'http://localhost:4000/uploads/' +
                                             place.photos?.[0]
                                         }
-                                        alt=""
+                                        alt={place.title|| "Stay Vesta"}
                                     />
                                 )}
 
@@ -210,7 +274,7 @@ export default function Homepage()
                     ))}
                 </div>
             )}
-
+        </div>
         </section>
 
     </main>

@@ -403,10 +403,12 @@ app.get('/places', async (req, res) => {
     // unlisted (false)
     const places = await Place.find({
         ...filter,
-        $or: [
-            { isListed: true },
-            { isListed: { $exists: false } },
-        ],
+        $and:[{
+            $or: [
+                { isListed: true },
+                { isListed: { $exists: false } },
+            ],
+        }]
     });
 
     const confirmedBookings = await Booking.find({
