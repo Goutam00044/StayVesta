@@ -126,6 +126,8 @@ export default function Header() {
                             <Link
                                 to="/signup"
                                 className={`
+                                    hidden 
+                                    sm:block
                                     font-medium
                                     transition
                                     ${

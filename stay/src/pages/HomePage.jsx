@@ -7,6 +7,8 @@ export default function Homepage()
     const location = useLocation();
     const [places, setplaces] = useState([]);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -14,6 +16,10 @@ export default function Homepage()
         const checkIn = params.get("checkIn");
         const checkOut = params.get("checkOut");
         const guests = params.get("guests");
+
+        setLoading(true);
+        setError(false);
+
         axios.get("/places", {
             params: {
                 destination,
@@ -23,6 +29,14 @@ export default function Homepage()
             },
         }).then((response) => {
             setplaces(response.data);
+        })
+        .catch((error) => {
+            console.error("Failed to fetch places:", error);
+            setError(true);
+            setplaces([]);
+        })
+        .finally(() => {
+            setLoading(false);
         });
     }, [location.search]);
 
@@ -105,21 +119,18 @@ export default function Homepage()
         {isMobileSearchOpen && (
         <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto md:hidden">
 
-            <div className="flex items-center gap-4 px-5 py-5 border-b border-gray-200">
+            <div className="flex items-center gap-2 px-2 py-5 border-b border-gray-300">
 
                 <button
                     onClick={() => setIsMobileSearchOpen(false)}
                     className="
                         w-10
                         h-10
-                        rounded-full
-                        bg-gray-100
                         flex
                         items-center
                         justify-center
-                        text-gray-700
                         text-xl
-                        flex-shrink-0
+                        shrink-0
                     "
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -128,8 +139,8 @@ export default function Homepage()
 
                 </button>
 
-                <h2 className="text-xl font-bold text-gray-900">
-                    Search stays
+                <h2 className="text-2xl font-semibold text-black">
+                    Search Stays
                 </h2>
 
             </div>
@@ -193,7 +204,32 @@ export default function Homepage()
 
 
             {/* Existing No Places UI */}
-            {places.length === 0 && (
+            
+            {/* Loading State */}
+                {loading && (
+                    <div className="text-center py-20">
+                        <div className="mx-auto w-10 h-10 border-4 border-gray-200 border-t-black rounded-full animate-spin" />
+
+                        <p className="mt-4 text-gray-500">
+                            Finding available stays...
+                        </p>
+                    </div>
+                )}
+            {/* Error State */}
+            {!loading && error && (
+                <div className="text-center py-20">
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                        Something went wrong
+                    </h2>
+
+                    <p className="text-gray-500 mt-2">
+                        We couldn't load the stays. Please try again.
+                    </p>
+                </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && !error && places.length === 0 && (
                 <div className="text-center py-20">
                     <h2 className="text-2xl font-semibold">
                         No places found
@@ -207,7 +243,7 @@ export default function Homepage()
 
 
             {/* Existing Places */}
-            {places.length > 0 && (
+            {!loading && places.length > 0 && (
                 <div
                     className="
                         grid
@@ -244,7 +280,7 @@ export default function Homepage()
                                             'http://localhost:4000/uploads/' +
                                             place.photos?.[0]
                                         }
-                                        alt={place.title|| "Stay Vesta"}
+                                        alt={place.title|| "StayVesta"}
                                     />
                                 )}
 
