@@ -105,14 +105,14 @@ export default function PlacesPageFrom(){
 
     return(
         <div className="min-h-screen bg-gray-50">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto px-3 py-5 sm:px-6 sm:py-4 lg:px-8">
                 {/* Header Section */}
-                <div className="mb-12">
+                <div className="mb-8 sm:mb-12">
                     
-                    <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+                    <h1 className="text-3xl sm:text-4xl px-2 font-semibold text-gray-900 mb-2">
                         {id ? 'Update your property' : 'List your property'}
                     </h1>
-                    <p className="text-lg text-gray-600">
+                    <p className="text-lg px-2 text-gray-600">
                         {id ? 'Update your property details of your accommodation' : 'Share the details of your property to showcase it, so guests can discover and book it'}
                     </p>
                 </div>
@@ -280,7 +280,7 @@ export default function PlacesPageFrom(){
 
                     {/* Submit Button */}
                     <div className="flex gap-3 mb-20">
-                        <button type="button" onClick={() => navigate(-1)} className="flex-1 bg-gray-300 hover:bg-gray-400 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
+                        <button type="button" onClick={() => navigate(-1)} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition duration-200 transform shadow-md"
                         >
                             {id ? 'Cancel' : 'Back'}
                         </button>

@@ -76,7 +76,7 @@ export default function PlacesPage(){
     }
 }
     return(
-    <div className="w-full px-6 py-8">
+    <div className="w-full px-4 sm:px-6 py-6 sm:py-8">
                     {/* <div className="mt-3 mb-6 mx-18">
                     <Link className='bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-full font-semibold transition inline-flex gap-1' 
                            to={'/hosting/listings/new'}> 
@@ -95,25 +95,24 @@ export default function PlacesPage(){
              <div className="flex flex-col gap-3">
                 <div className="mt-4">
                     {/* Header */}
-                   <div className="flex items-center justify-between">
+                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                      <div>
-                        <h1 className="text-3xl font-semibold">
+                        <h1 className="text-2xl sm:text-3xl font-semibold">
                         My Listing
                         </h1>
-                        <p className="text-gray-500 text-md">
+                        <p className="text-gray-500 text-sm sm:text-md">
                             Manage all your accommodations.
                         </p>
                      </div>
 
                     <Link
-                        className="bg-amber-600 hover:bg-amber-700  text-white px-6 py-2 rounded font-semibold transition inline-flex gap-2"
-                        to="/hosting/listings/new">
+                        className="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded font-semibold transition inline-flex items-center justify-center"                        to="/hosting/listings/new">
                         Add Listing
                     </Link>
                    </div>
                 </div>
-                <div className="mt-6 mb-2 border border-gray-400 rounded-3xl bg px-2 py-2 bg-white">
-                <div className="flex justify-end-safe gap-6">
+                <div className="mt-6 mb-2 border border-gray-400 rounded-3xl px-2 py-2 bg-white">
+                <div className="flex flex-wrap justify-center sm:justify-end gap-2 sm:gap-6">
                     <div className="flex gap-1 border border-gray-300 py-1 rounded-2xl bg-gray-200 px-4 items-center">
                         <p className="font-semibold text-green-800 ">
                             Active 
@@ -148,8 +147,8 @@ export default function PlacesPage(){
                     return (
                             <div
                                 key={place._id}
-                                className="relative hover:bg-gray-100 mb-1 shadow-md hover:shadow-lg border border-gray-300 flex rounded items-stretch">
-                                <div className="w-50 h-42 flex-shrink-0 overflow-hidden rounded-l">
+                                className="relative hover:bg-gray-100 mb-3 shadow-md hover:shadow-lg border border-gray-300 flex flex-col sm:flex-row rounded overflow-hidden">
+                                <div className="w-full h-48 sm:w-50 sm:h-42 flex-shrink-0 overflow-hidden sm:rounded-l">
                                     {firstPhoto ? (
                                         <img
                                             className="w-full h-full object-cover"
@@ -162,36 +161,37 @@ export default function PlacesPage(){
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col w-full justify-center">
+                                <div className="flex flex-col w-full justify-center p-4 sm:p-0">
                                     <div className="relative flex items-center justify-between">
-                                    <h2 className="text-xl ml-6 py-4 font-semibold">{place.title}</h2>
+                                    <h2 className="text-lg sm:text-xl px-0 sm:ml-6 py-3 sm:py-4 pr-24 font-semibold">{place.title}</h2>
                                      
                                     </div>
-                                    <p className="w-150 ml-6 mb-3 line-clamp-2 text-sm text-gray-600">
+                                    <p className="w-full sm:w-150 ml-0 sm:ml-6 mb-3 line-clamp-2 text-sm text-gray-600">
                                         {place.description}
                                     </p>
-                                    <div className="w-full flex flex-row items-center p-2 h-12 relative mt-2">
-                                        <div className="px-4 font-semibold text-sm">
+                                    <div className="w-full flex flex-nowrap items-center justify-between gap-2 p-2 min-h-12 relative mt-2">
+                                        <div className="px-4 font-semibold text-base">
                                             ₹ {place.price}.00
                                         </div>
                                         <button 
                                             onClick={() =>
                                             setOpenMenu(OpenMenu === place._id ? null : place._id)
                                             }
-                                            className="text-amber-500 hover:text-amber-600 hover:cursor-pointer font-semibold text-sm absolute right-57">
+                                            className="text-amber-500 hover:text-amber-600 hover:cursor-pointer font-semibold text-sm
+                   sm:absolute sm:right-57">
                                             More Actions
                                         </button>
-                                        <div className="absolute right-30">
+                                        <div className="hidden sm:block absolute right-30">
                                             <Link
                                                 to={`/hosting/listings/${place._id}`}
-                                                className="px-6 py-1.5 hover:cursor-pointer font-semibold text-sm rounded border text-orange-400 border-orange-400 hover:text-orange-600 hover:border-orange-600 ">
+                                                className="px-6 py-1.5 hover:cursor-pointer font-semibold text-sm rounded border text-orange-400 border-orange-400 hover:text-orange-600 hover:border-orange-600">
                                                 Modify
                                             </Link>
                                         </div>
-                                        <div className="absolute right-4">
+                                        <div className="hidden sm:block absolute right-4">
                                             <Link 
                                                 to={`/places/${place._id}`}
-                                                className="px-8 py-1.5 hover:cursor-pointerrounded border font-semibold text-sm text-white bg-orange-400 hover:bg-orange-500">
+                                                    className="px-8 py-1.5 hover:cursor-pointer rounded border font-semibold text-sm text-white bg-orange-400 hover:bg-orange-500">
                                                 View
                                             </Link>
                                         </div>

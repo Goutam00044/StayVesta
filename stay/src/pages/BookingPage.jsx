@@ -182,24 +182,14 @@ export default function BookingPage() {
     return (
         <div className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-4 py-4 sm:py-4 lg:py-5">
             <div>
-                <div className="flex items-center gap-2 mb-1">
-                        <Link
-                        to="/"
-                        className="inline-flex group"
-                        >
-                        <span className="text-xl transition-transform duration-300 group-hover:-translate-x-0.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                            </svg>
-                        </span>
-                    
-                    </Link>
+                <div className="mb-1">
+                        
                     <h1 className="text-2xl font-semibold text-gray-900">
                         Review your booking
                     </h1>
                     
                 </div>
-                <p className="text-sm pl-8 text-black mb-8">
+                <p className="text-sm text-black mb-8">
                     Check the details before completing your payment.
                     </p>
             </div>
@@ -287,9 +277,9 @@ export default function BookingPage() {
 
                     </div>
 
-                    <div className="mt-auto">
+                    <div className="mt-auto gap-2 flex flex-col sm:flex-row">
                         <button
-                            className="primary w-full py-2.5 disabled:opacity-50"
+                            className="w-full bg-amber-600 hover:bg-amber-700 text-white px-6 py-2.5 rounded font-semibold transition disabled:opacity-50"
                             onClick={handlePayClick}
                             disabled={isLoading}
                         >
@@ -297,6 +287,14 @@ export default function BookingPage() {
                                 ? "Processing..."
                                 : `Pay ₹${bookinfo.price}`}
                         </button>
+
+                        <Link
+                         to="/"
+                         className="text-center w-full bg-gray-400 hover:bg-gray-500 text-gray-800 px-4 py-3 rounded font-semibold transition disabled:opacity-50"
+                        >
+                            Cancel
+                    
+                        </Link>
 
                     </div>
                 </div>

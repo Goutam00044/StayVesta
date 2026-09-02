@@ -2,7 +2,7 @@ export default function PlaceHeader({ place }) {
     return (
         <section className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Left */}
-            <div>
+            <div className="py-2">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900">
                     {place.title}
                 </h1>

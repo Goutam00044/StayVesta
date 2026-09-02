@@ -51,7 +51,7 @@ export default function Header() {
                 ${
                     isHomePage
                         ? "absolute top-0 left-0 text-white"
-                        : "relative bg-white text-black border-b border-gray-100"
+                        : "relative bg-white text-black border-b border-gray-300"
                 }
             `}
         >

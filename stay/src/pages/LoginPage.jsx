@@ -41,41 +41,41 @@ export default function LoginPage(){
         return <Navigate to={'/'} />
     }
     return(
-        <>
-            <div className="mt-4 grow flex items-center justify-around">
-                <div className="mb-64">
-                <h1 className="text-4xl text-center mb-2">Login in to your account</h1>
-                <h3 className="text-md font-semibold text-center mb-10 text-amber-700">Welcome back! Please enter your details</h3>
-                <form className="max-w-2xl mx-auto" onSubmit={handleloginSubmit}>
-                    <div className="form-group w-120">
-                        <input type="text" 
+    <>
+    <div className="mt-4 grow flex items-center justify-around px-4 sm:py-4">                
+        <div className="sm:mb-64 mb-32">
+            <h1 className="text-3xl sm:text-4xl text-center mb-2">Login in to your account</h1>
+            <h3 className="text-md font-semibold text-center mb-10 text-amber-700">Welcome back! Please enter your details</h3>
+        <form className="max-w-2xl mx-auto w-full" onSubmit={handleloginSubmit}>
+            <div className="form-group w-full sm:w-120">
+                <input type="text" 
                         placeholder=" "
                         value={email}
                         onChange={(e)=>{
                             setemail(e.target.value);
                         }}
                         />
-                        <label htmlFor="email">Email</label>
-                    </div>
-                    <div className="form-group">
-                        <input type="password" 
+                    <label htmlFor="email">Email</label>
+            </div>
+            <div className="form-group">
+                <input type="password" 
                         placeholder=" "
                         value={password}
                         onChange={(e)=>{
                             setpassword(e.target.value);
                         }}
                         />
-                        <label htmlFor="password">Password</label>
-                    </div>
-                    <button className="primary mb-6 mt-2">Login</button>
-                    <div className="border-t border-gray-300 mb-2"></div>
+                    <label htmlFor="password">Password</label>
+            </div>
+            <button className="primary mb-6 mt-2">Login</button>
+                <div className="border-t border-gray-300 mb-2"></div>
                     <Link to={"/signup"} className="group">
                         <div className="text-center mt-6 font-semibold">Don't have an account? Sign Up</div>
                         <div className="border-t w-60 mx-auto mt-0.5 group-hover:opacity-0 transition-opacity duration-300"></div>
                     </Link>
                 </form>
-                </div>               
-            </div>
-        </>
+            </div>               
+        </div>
+    </>
     )
 }

@@ -163,7 +163,7 @@ export default function PlacePage()
 
     return(
         <div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">           
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 sm:py-4 lg:py-4">           
             <PlaceHeader place={place} />
 
             <PlaceGallery
