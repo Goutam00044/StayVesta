@@ -62,7 +62,11 @@ export default function HostingPage() {
                                     <div className="w-32 h-24 rounded-xl overflow-hidden flex-shrink-0">
                                         {firstPhoto ? (
                                             <img
-                                                src={`http://localhost:4000/uploads/${firstPhoto}`}
+                                                src={
+                                                    firstPhoto.startsWith("http")
+                                                        ? firstPhoto
+                                                        : `http://localhost:4000/uploads/${firstPhoto}`
+                                                }
                                                 alt={place.title}
                                                 className="w-full h-full object-cover"
                                             />

@@ -147,12 +147,16 @@ export default function PlacesPage(){
                     return (
                             <div
                                 key={place._id}
-                                className="relative hover:bg-gray-100 mb-3 shadow-md hover:shadow-lg border border-gray-300 flex flex-col sm:flex-row rounded overflow-hidden">
+                                className="relative hover:bg-gray-100 mb-3 shadow-md hover:shadow-lg border border-gray-300 flex flex-col sm:flex-row rounded">
                                 <div className="w-full h-48 sm:w-50 sm:h-42 flex-shrink-0 overflow-hidden sm:rounded-l">
                                     {firstPhoto ? (
                                         <img
                                             className="w-full h-full object-cover"
-                                            src={'http://localhost:4000/uploads/' + firstPhoto}
+                                            src={
+                                                firstPhoto.startsWith("http")
+                                                    ? firstPhoto
+                                                    : `http://localhost:4000/uploads/${firstPhoto}`
+                                            }
                                             alt={place.title}
                                         />
                                     ) : (
@@ -177,8 +181,7 @@ export default function PlacesPage(){
                                             onClick={() =>
                                             setOpenMenu(OpenMenu === place._id ? null : place._id)
                                             }
-                                            className="text-amber-500 hover:text-amber-600 hover:cursor-pointer font-semibold text-sm
-                   sm:absolute sm:right-57">
+                                            className="text-amber-500 hover:text-amber-600 hover:cursor-pointer font-semibold text-sm sm:absolute sm:right-57">
                                             More Actions
                                         </button>
                                         <div className="hidden sm:block absolute right-30">

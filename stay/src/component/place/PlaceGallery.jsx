@@ -1,5 +1,3 @@
-const BASE_URL = "http://localhost:4000/uploads/";
-
 export default function PlaceGallery({
     place,
     setshowallphotos,
@@ -36,7 +34,11 @@ export default function PlaceGallery({
                     >
                         <img
                             onClick={() => setshowallphotos(true)}
-                            src={BASE_URL + photos[0]}
+                            src={
+                                    photos[0]?.startsWith("http")
+                                        ? photos[0]
+                                        : `http://localhost:4000/uploads/${photos[0]}`
+                                }
                             className="
                                 block
                                 w-full
@@ -77,8 +79,9 @@ export default function PlaceGallery({
                                         setshowallphotos(true)
                                     }
                                     src={
-                                        BASE_URL +
-                                        photos[index]
+                                        photos[index]?.startsWith("http")
+                                            ? photos[index]
+                                            : `http://localhost:4000/uploads/${photos[index]}`
                                     }
                                     className="
                                         block

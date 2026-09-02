@@ -141,7 +141,12 @@ export default function PlacePage()
                                 place.photos.map((photo, index) => (
                                     <div key={photo + index}>
                                         <img
-                                            src={"http://localhost:4000/uploads/" + photo}
+                                            
+                                            src={
+                                                photo.startsWith("http")
+                                                    ? photo
+                                                    : `http://localhost:4000/uploads/${photo}`
+                                            }
                                             className="
                                                 rounded 
                                                 w-full 

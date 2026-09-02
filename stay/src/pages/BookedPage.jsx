@@ -274,9 +274,11 @@ function BookingContent({ booking, mobile = false }) {
                         }
                     >
                         <img
+                            
                             src={
-                                "http://localhost:4000/uploads/" +
-                                booking.place.photos?.[0]
+                                booking.place.photos?.[0]?.startsWith("http")
+                                    ? booking.place.photos[0]
+                                    : `http://localhost:4000/uploads/${booking.place.photos?.[0]}`
                             }
                             alt={booking.place.title}
                             className="w-full h-full object-cover"

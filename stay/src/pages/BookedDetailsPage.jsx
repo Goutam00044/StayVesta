@@ -107,8 +107,9 @@ export default function BookedDetailsPage() {
                 <div className="md:w-5/12 relative min-h-55">
                     <img
                         src={
-                            "http://localhost:4000/uploads/" +
-                            bookinfo.place.photos?.[1]
+                            bookinfo.place.photos?.[1]?.startsWith("http")
+                                ? bookinfo.place.photos[1]
+                                : `http://localhost:4000/uploads/${bookinfo.place.photos?.[1]}`
                         }
                         alt={bookinfo.place.title}
                         className="w-full h-full object-cover"

@@ -14,6 +14,7 @@ const Place = require('./models/place');
 const Booking = require('./models/booking');
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const supabase = require('./config/supabase');
 
 const app = express();
 
@@ -209,24 +210,73 @@ app.post('/upload-link', async (req, res) => {
     }
 });
 
-const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
-app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
-    const uploadedfiles = [];
-    for (let i = 0; i < req.files.length; i++) {
-        const { path: filePath, originalname } = req.files[i];
-        // Extracting the 'file name' with '.extension'
-        const parts = originalname.split('.');
-        const ext = parts[parts.length - 1];
-        // Set fileName with '.extension'
-        const newPath = filePath + '.' + ext;
-        console.log(newPath);
-        fs.renameSync(filePath, newPath);
-        // Always return only the base filename (no directories or 'uploads' prefix)
-        uploadedfiles.push(path.basename(newPath));
-    }
-    res.json(uploadedfiles);
+// Uploading Multiple Photos from React to NodeJs Server but into our local uploads folder
+// const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
+// app.post('/upload', photosmiddleware.array('photos', 30), (req, res) => {
+//     const uploadedfiles = [];
+//     for (let i = 0; i < req.files.length; i++) {
+//         const { path: filePath, originalname } = req.files[i];
+//         // Extracting the 'file name' with '.extension'
+//         const parts = originalname.split('.');
+//         const ext = parts[parts.length - 1];
+//         // Set fileName with '.extension'
+//         const newPath = filePath + '.' + ext;
+//         console.log(newPath);
+//         fs.renameSync(filePath, newPath);
+//         // Always return only the base filename (no directories or 'uploads' prefix)
+//         uploadedfiles.push(path.basename(newPath));
+//     }
+//     res.json(uploadedfiles);
+// })
 
-})
+const photosmiddleware = multer({
+    storage: multer.memoryStorage()
+});
+
+app.post('/upload', photosmiddleware.array('photos', 30), async (req, res) => {
+    try {
+        const uploadedfiles = [];
+
+        for (const file of req.files) {
+            const fileExt = path.extname(file.originalname).toLowerCase();
+
+            const fileName =
+                `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${fileExt}`;
+
+            const { error } = await supabase.storage
+                .from(process.env.SUPABASE_BUCKET)
+                .upload(fileName, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: false,
+                });
+
+            if (error) {
+                console.error('Supabase upload error:', error);
+
+                return res.status(500).json({
+                    error: 'Image upload failed',
+                    details: error.message,
+                });
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from(process.env.SUPABASE_BUCKET)
+                .getPublicUrl(fileName);
+
+            uploadedfiles.push(publicUrlData.publicUrl);
+        }
+
+        res.json(uploadedfiles);
+
+    } catch (error) {
+        console.error('Upload error:', error);
+
+        res.status(500).json({
+            error: 'Image upload failed',
+            details: error.message,
+        });
+    }
+});
 
 // Saving this Places data from React to MonogoDb model 
 app.post('/places', (req, res) => {
