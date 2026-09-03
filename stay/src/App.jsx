@@ -9,7 +9,7 @@ import Layout from './component/Layout.jsx';
 import axios, { Axios } from 'axios';
 // Ensure axios defaults are set as early as possible so requests
 // from context/providers include credentials and the correct base URL.
-axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.baseURL = '/api';
 axios.defaults.withCredentials = true;
 import { UserContextProvider } from './UserContext.jsx';
 import PlacesPage from './pages/PlacesPage.jsx';

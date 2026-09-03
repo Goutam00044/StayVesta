@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd stay && npm install && npm run build",
+  "outputDirectory": "stay/dist",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

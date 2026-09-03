@@ -18,6 +18,14 @@ const supabase = require('./config/supabase');
 
 const app = express();
 
+// Handle /api prefix when deployed on Vercel
+app.use((req, res, next) => {
+    if (req.url.startsWith('/api/')) {
+        req.url = req.url.replace(/^\/api/, '');
+    }
+    next();
+});
+
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = process.env.JWT_SECRET || 'dev-jwt-secret-change-me';
 const src = path.join(__dirname, 'uploads')
@@ -902,6 +910,4 @@ app.patch('/places/:id/toggle-listing', async (req, res) => {
 }
 });
 
-app.listen(4000, () => {
-    console.log('Server Started on port no 4000');
-});
+module.exports = app;
