@@ -163,7 +163,7 @@ export default function PlacesPageFrom(){
                         </div>
 
                         {preInput('Upload Photos', 'Upload photos that showcase your space.')}
-                        <PhotosUploader addedPhotos={addedPhotos} onchange={setAddedPhotos}/>
+                        <PhotosUploader addedPhotos={addedPhotos} onchange={setAddedPhotos} placeId={id} />
                     </div>
 
                     {/* Section 3: Description & Details */}

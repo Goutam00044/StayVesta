@@ -194,21 +194,21 @@ app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true);
 })
 
-app.post('/upload-link', async (req, res) => {
-    const { link } = req.body;
-    const newname = 'photo' + Date.now() + '.jpg';
-    const dest = path.join(__dirname, 'uploads', newname);
+// app.post('/upload-link', async (req, res) => {
+//     const { link } = req.body;
+//     const newname = 'photo' + Date.now() + '.jpg';
+//     const dest = path.join(__dirname, 'uploads', newname);
 
-    try {
-        await imagedownloader.image({
-            url: link,
-            dest,
-        });
-        res.json(newname);
-    } catch (e) {
-        res.status(400).json({ error: 'Image download failed', details: e.message });
-    }
-});
+//     try {
+//         await imagedownloader.image({
+//             url: link,
+//             dest,
+//         });
+//         res.json(newname);
+//     } catch (e) {
+//         res.status(400).json({ error: 'Image download failed', details: e.message });
+//     }
+// });
 
 // Uploading Multiple Photos from React to NodeJs Server but into our local uploads folder
 // const photosmiddleware = multer({ dest: path.join(__dirname, 'uploads') });
@@ -229,6 +229,171 @@ app.post('/upload-link', async (req, res) => {
 //     res.json(uploadedfiles);
 // })
 
+// Upload by link to Supabase Storage S3 bucket instead of local uploads folder
+app.post('/upload-link', async (req, res) => {
+    try {
+        const { link } = req.body;
+
+        if (!link) {
+            return res.status(400).json({
+                error: 'Image link is required'
+            });
+        }
+
+        // Download image into memory
+        const response = await fetch(link);
+
+        if (!response.ok) {
+            return res.status(400).json({
+                error: 'Failed to download image'
+            });
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        // Get image type
+        const contentType =
+            response.headers.get('content-type') || 'image/jpeg';
+
+        const extensionMap = {
+            'image/jpeg': '.jpg',
+            'image/png': '.png',
+            'image/webp': '.webp'
+        };
+
+        const fileExt = extensionMap[contentType] || '.jpg';
+
+        // Generate unique filename
+        const fileName =
+            `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${fileExt}`;
+
+        // Upload directly to Supabase
+        const { error } = await supabase.storage
+            .from(process.env.SUPABASE_BUCKET)
+            .upload(fileName, buffer, {
+                contentType,
+                upsert: false
+            });
+
+        if (error) {
+            console.error('Supabase upload error:', error);
+
+            return res.status(500).json({
+                error: 'Image upload failed',
+                details: error.message
+            });
+        }
+
+        // Get public URL
+        const { data: publicUrlData } = supabase.storage
+            .from(process.env.SUPABASE_BUCKET)
+            .getPublicUrl(fileName);
+
+        res.json({
+            url: publicUrlData.publicUrl
+        });
+
+    } catch (error) {
+        console.error('Upload link error:', error);
+
+        res.status(500).json({
+            error: 'Image upload failed',
+            details: error.message
+        });
+    }
+});
+
+// Delete individual property image from Supabase
+app.delete('/delete-photo', async (req, res) => {
+    try {
+        const userData = await userDataFromReq(req);
+        const { placeId, photoUrl } = req.body;
+
+        if (!photoUrl) {
+            return res.status(400).json({
+                error: "Photo URL is required.",
+            });
+        }
+
+        // Check if this is a Supabase image
+        if (!photoUrl.includes('/storage/v1/object/public/')) {
+            return res.status(400).json({
+                error: "This is not a Supabase image.",
+            });
+        }
+
+        // Extract bucket + file path from URL
+        const storagePart = photoUrl.split('/storage/v1/object/public/')[1];
+
+        const parts = storagePart.split('/');
+
+        const bucketName = parts.shift();
+        const filePath = parts.join('/');
+
+        // Make sure the image belongs to our bucket
+        if (bucketName !== process.env.SUPABASE_BUCKET) {
+            return res.status(403).json({
+                error: "Invalid storage bucket.",
+            });
+        }
+
+        if (!filePath) {
+            return res.status(400).json({
+                error: "Invalid image path.",
+            });
+        }
+
+        // Existing property
+        if (placeId) {
+
+            const place = await Place.findOne({
+                _id: placeId,
+                owner: userData.id,
+            });
+
+            if (!place) {
+                return res.status(404).json({
+                    error: "Place not found.",
+                });
+            }
+
+            if (!place.photos.includes(photoUrl)) {
+                return res.status(404).json({
+                    error: "Photo not found in this property.",
+                });
+            }
+        }
+
+        // Delete image from Supabase
+        const { error } = await supabase.storage
+            .from(process.env.SUPABASE_BUCKET)
+            .remove([filePath]);
+
+        if (error) {
+            console.error('Supabase image deletion error:', error);
+
+            return res.status(500).json({
+                error: "Failed to delete image.",
+                details: error.message,
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Image deleted successfully.",
+        });
+
+    } catch (err) {
+        console.error(err);
+
+        res.status(500).json({
+            error: "Failed to delete image.",
+        });
+    }
+});
+
+// S3 Bucket Uploading with Supabase Storage
 const photosmiddleware = multer({
     storage: multer.memoryStorage()
 });
@@ -371,6 +536,7 @@ app.put('/places', (req, res) => {
 })
 
 // Delete Property Safely with proper authentication 
+// Delete Property Safely with proper authentication
 app.delete('/places/:id', async (req, res) => {
     try {
         const userData = await userDataFromReq(req);
@@ -400,6 +566,29 @@ app.delete('/places/:id', async (req, res) => {
             });
         }
 
+        // Delete images from Supabase
+        if (place.photos?.length > 0) {
+            const filePaths = place.photos
+                .filter(photo => photo.includes('/storage/v1/object/public/'))
+                .map(photo =>
+                    photo.split('/storage/v1/object/public/')[1]
+                        .split('/')
+                        .slice(1)
+                        .join('/')
+                );
+
+            if (filePaths.length > 0) {
+                const { error } = await supabase.storage
+                    .from(process.env.SUPABASE_BUCKET)
+                    .remove(filePaths);
+
+                if (error) {
+                    console.error('Supabase image deletion error:', error);
+                }
+            }
+        }
+
+        // Delete property from MongoDB
         await Place.findByIdAndDelete(id);
 
         res.json({

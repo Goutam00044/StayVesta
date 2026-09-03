@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
-export default function PhotosUploader({addedPhotos,onchange}){
-    const [photoLink,setPhotoLink] = useState('');
+export default function PhotosUploader({addedPhotos, onchange, placeId}){
+    const [photoLink, setPhotoLink] = useState('');
     
     function uploadfile(ev){
         // for file inputs the FileList is on ev.target.files
@@ -19,30 +20,99 @@ export default function PhotosUploader({addedPhotos,onchange}){
                 const {data:filenames} = response;
                 onchange(prev => {
                 return [...prev, ...filenames];
+                
                 });
+                toast.success("Image Added Successfully.");
             }
-        )
+        ).catch(error => {
+            console.error('Upload failed', error);
+            toast.error("Failed to Upload Image.");
+        })
     }
-    async function addPhotoByLink(ev){
+
+    async function addPhotoByLink(ev) {
         ev.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/upload-link', { link: photoLink });
-            const filename = response.data?.savedPath || response.data;
-            if (!filename) {
+            const response = await axios.post('/upload-link', {
+                link: photoLink
+            });
+
+            const url = response.data?.url;
+
+            if (!url) {
                 return;
             }
-            onchange(prev => [...prev, filename]);
+
+            onchange(prev => [...prev, url]);
             setPhotoLink('');
+            toast.success("Image Added Successfully.");
+
         } catch (error) {
             console.error('Upload failed', error);
+            toast.error("Failed to Add Image.");
         }
     }
 
-    function ondelete(ev, filename){
-        ev.preventDefault();
-        console.log("remove")
-        onchange([...addedPhotos.filter(photo=> photo!== filename)])
+    async function ondelete(ev, filename) {
+    ev.preventDefault();
+
+    // New property — property is not created yet
+    if (!placeId) {
+        try {
+            const response = await axios.delete('/delete-photo', {
+                data: {
+                    photoUrl: filename,
+                },
+            });
+
+            if (!response.data?.success) {
+                toast.error("Failed to Delete Image.");
+                return;
+            }
+
+            onchange(
+                addedPhotos.filter(photo => photo !== filename)
+            );
+             toast.success("Image Deleted Successfully.");
+
+        } catch (error) {
+            console.error('Delete Image Failed:', error);
+            toast.error(
+                error.response?.data?.error || "Failed to Delete Image."
+            );
+        }
+
+        return;
     }
+
+    // Existing property
+    try {
+        const response = await axios.delete('/delete-photo', {
+            data: {
+                placeId,
+                photoUrl: filename,
+            },
+        });
+
+        if (!response.data?.success) {
+            toast.error("Failed to Delete Image.");
+            return;
+        }
+
+        onchange(
+            addedPhotos.filter(photo => photo !== filename)
+        );
+
+         toast.success("Image Deleted Successfully.");
+
+        } catch (error) {
+            console.error('Delete Image Failed:', error);
+            toast.error(
+                error.response?.data?.error || "Failed to Delete Image."
+            );
+        }
+    }
+
     function setfav(ev, filename){
         ev.preventDefault();
         onchange([filename, ...addedPhotos.filter(photo=> photo !== filename)]); 
@@ -58,7 +128,7 @@ export default function PhotosUploader({addedPhotos,onchange}){
                 }}/>
             <button type="button" 
                 onClick={addPhotoByLink} 
-                className="bg-gray-200 px-4 rounded-2xl">
+                className="bg-amber-400 hover:bg-amber-300 text-white text-center px-4 rounded-2xl">
                 Add&nbsp; 
             </button>
             </div>
