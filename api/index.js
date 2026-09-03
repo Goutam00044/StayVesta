@@ -55,7 +55,7 @@ function userDataFromReq(req) {
 
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: true,
 }));
 app.use(cookieParser());
 app.use(express.json());
